@@ -17,8 +17,7 @@ public class ClientDTO {
     private byte isEncrypted;
     private Byte status;
     private String address;
-
     private LocalDate expiryDate;
     private String logo;
-    private Integer clientCount;
+    private String apiKey;
 }
