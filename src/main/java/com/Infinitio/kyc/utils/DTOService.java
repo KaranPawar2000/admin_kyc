@@ -1,7 +1,9 @@
 package com.Infinitio.kyc.utils;
 
 import com.Infinitio.kyc.dto.ClientDTO;
+import com.Infinitio.kyc.dto.FormDTO;
 import com.Infinitio.kyc.entity.TbClientMaster;
+import com.Infinitio.kyc.entity.TbFormMaster;
 import org.springframework.stereotype.Component;
 
 
@@ -26,4 +28,15 @@ public class DTOService {
          dto.setApiKey(client.getApiKey());
          return dto;
      }
+
+
+    public FormDTO convertFormToDTO(TbFormMaster form) {
+        FormDTO dto = new FormDTO();
+        dto.setId(form.getId());
+        dto.setFormName(form.getName());
+        dto.setLink(form.getLink());
+        return dto;
+    }
+
+
 }

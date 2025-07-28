@@ -1,9 +1,11 @@
 package com.Infinitio.kyc.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "tb_form_master")
 public class TbFormMaster {
