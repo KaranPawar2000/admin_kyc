@@ -2,8 +2,12 @@ package com.Infinitio.kyc.utils;
 
 import com.Infinitio.kyc.dto.ClientDTO;
 import com.Infinitio.kyc.dto.FormDTO;
+import com.Infinitio.kyc.dto.RoleDTO;
+import com.Infinitio.kyc.dto.RoleFormDTO;
 import com.Infinitio.kyc.entity.TbClientMaster;
 import com.Infinitio.kyc.entity.TbFormMaster;
+import com.Infinitio.kyc.entity.TbRoleDetails;
+import com.Infinitio.kyc.entity.TbRoleMaster;
 import org.springframework.stereotype.Component;
 
 
@@ -37,6 +41,27 @@ public class DTOService {
         dto.setLink(form.getLink());
         return dto;
     }
+
+    public RoleDTO convertRoleToDTO(TbRoleMaster role) {
+        RoleDTO dto = new RoleDTO();
+        dto.setName(role.getName());
+        dto.setStatus(role.getStatus());
+        dto.setDescription(role.getDescription());
+        return dto;
+    }
+
+    public RoleFormDTO convertRoleDetailToRoleFormDTO(TbRoleDetails details) {
+        RoleFormDTO dto = new RoleFormDTO();
+        dto.setFormName(details.getForm().getName());
+        dto.setFormLink(details.getForm().getLink());
+        dto.setCreatedModifiedDate(details.getCreatedModifiedDate());
+        dto.setShowInMenu(details.getShowInMenu());
+        dto.setSeqNo(details.getSeqNo());
+        dto.setIsAllowed(details.getIsAllowed()); // ✅ Set isAllowed value
+        return dto;
+    }
+
+
 
 
 }
