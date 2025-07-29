@@ -44,6 +44,7 @@ public class DTOService {
 
     public RoleDTO convertRoleToDTO(TbRoleMaster role) {
         RoleDTO dto = new RoleDTO();
+        dto.setId(role.getId());
         dto.setName(role.getName());
         dto.setStatus(role.getStatus());
         dto.setDescription(role.getDescription());
