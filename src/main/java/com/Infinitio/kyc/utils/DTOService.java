@@ -1,13 +1,7 @@
 package com.Infinitio.kyc.utils;
 
-import com.Infinitio.kyc.dto.ClientDTO;
-import com.Infinitio.kyc.dto.FormDTO;
-import com.Infinitio.kyc.dto.RoleDTO;
-import com.Infinitio.kyc.dto.RoleFormDTO;
-import com.Infinitio.kyc.entity.TbClientMaster;
-import com.Infinitio.kyc.entity.TbFormMaster;
-import com.Infinitio.kyc.entity.TbRoleDetails;
-import com.Infinitio.kyc.entity.TbRoleMaster;
+import com.Infinitio.kyc.dto.*;
+import com.Infinitio.kyc.entity.*;
 import org.springframework.stereotype.Component;
 
 
@@ -61,6 +55,32 @@ public class DTOService {
         dto.setIsAllowed(details.getIsAllowed()); // ✅ Set isAllowed value
         return dto;
     }
+
+
+    public AdminDTO convertAdminToDTO(TbAdminMaster admin) {
+        AdminDTO dto = new AdminDTO();
+        dto.setId(admin.getId());
+        dto.setName(admin.getName());
+        dto.setEmailId(admin.getEmailId());
+        dto.setMobileNo(admin.getMobileNo());
+        dto.setIsActive(admin.getIsActive());
+        dto.setPassword(admin.getPassword());
+        dto.setCreatedModifiedDate(admin.getCreatedModifiedDate());
+        dto.setReadOnly(admin.getReadOnly());
+        dto.setArchiveFlag(admin.getArchiveFlag());
+
+        if (admin.getRole() != null) {
+            dto.setRoleId(admin.getRole().getId());
+            dto.setRoleName(admin.getRole().getName());
+        }
+
+        if (admin.getClient() != null) {
+            dto.setClientId(admin.getClient().getId());
+        }
+
+        return dto;
+    }
+
 
 
 

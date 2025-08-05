@@ -1,11 +1,13 @@
 package com.Infinitio.kyc.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_admin_master")
+@Data
 public class TbAdminMaster {
 
     @Id
@@ -16,8 +18,9 @@ public class TbAdminMaster {
     private String emailId;
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
-    private TbRoleMaster role;
+    @JoinColumn(name = "user_id", nullable = false)  // FK to tb_client_master(id)
+    private TbClientMaster client;
+
 
     private Byte isActive;
     private String password;
@@ -27,9 +30,8 @@ public class TbAdminMaster {
     private String archiveFlag;
 
     @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private TbClientMaster client;
+    @JoinColumn(name = "role_id")
+    private TbRoleMaster role;
 
-    private Integer userId;
+    private Integer clientId;
 }
-

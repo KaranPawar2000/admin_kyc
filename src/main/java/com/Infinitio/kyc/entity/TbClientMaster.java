@@ -2,8 +2,7 @@ package com.Infinitio.kyc.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,5 +38,8 @@ public class TbClientMaster {
     private String logo;
     private Byte isEncrypted;
     private String clientKey;
-}
 
+    // ✅ One client can have many admins
+    @OneToMany(mappedBy = "client")
+    private java.util.List<TbAdminMaster> admins;
+}
