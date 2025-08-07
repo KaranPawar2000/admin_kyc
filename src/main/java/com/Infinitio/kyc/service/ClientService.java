@@ -3,6 +3,7 @@ package com.Infinitio.kyc.service;
 import com.Infinitio.kyc.dto.ClientDTO;
 import com.Infinitio.kyc.dto.ClientDTOAdd;
 import com.Infinitio.kyc.entity.TbClientMaster;
+import com.Infinitio.kyc.entity.TbRoleMaster;
 import com.Infinitio.kyc.repository.TbClientMasterRepository;
 import com.Infinitio.kyc.utils.DTOService;
 import org.slf4j.Logger;
@@ -84,7 +85,14 @@ public class ClientService {
             client.setIsEncrypted(clientDTO.getIsEncrypted());
             client.setCreatedModifiedDate(java.time.LocalDateTime.now());
             client.setClientId(1);
-            // 🔐 Generate secure API key
+
+            TbRoleMaster role = new TbRoleMaster();
+            role.setId(3);                          // Assuming 3 is the role ID for clients
+            client.setRole(role);                  // setting the role into the client
+            client.setReadOnly("N"); // Assuming readOnly is a string field
+            client.setArchiveFlag("F"); // Assuming archiveFlag is a string field
+
+            //Generate secure API key
             String apiKey = generateSecureApiKey(clientDTO.getEmailId(), clientDTO.getPassword());
             client.setApiKey(apiKey);
 
@@ -103,7 +111,11 @@ public class ClientService {
             responseDTO.setPincode(saved.getPincode());
             responseDTO.setStatus(saved.getStatus());
             responseDTO.setIsEncrypted(saved.getIsEncrypted());
-
+            responseDTO.setApiKey(saved.getApiKey());
+            responseDTO.setReadOnly(saved.getReadOnly());
+            responseDTO.setArchiveFlag(saved.getArchiveFlag());
+            responseDTO.setRoleId(saved.getRole().getId());
+            responseDTO.setRoleName(saved.getRole().getName());
             return responseDTO;
 
         } catch (Exception e) {

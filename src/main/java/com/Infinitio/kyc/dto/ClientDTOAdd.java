@@ -18,6 +18,10 @@ public class ClientDTOAdd {
     private String pincode;
     private Byte status;
     private byte isEncrypted;
+    private String apiKey;
+    private String archiveFlag;
+    private String readOnly;
 
-
+    private Integer roleId;     // ✅ Send role ID back
+    private String roleName;
 }
