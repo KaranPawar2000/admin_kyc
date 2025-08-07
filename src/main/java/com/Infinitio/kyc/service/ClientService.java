@@ -1,6 +1,7 @@
 package com.Infinitio.kyc.service;
 
 import com.Infinitio.kyc.dto.ClientDTO;
+import com.Infinitio.kyc.dto.ClientDTOAdd;
 import com.Infinitio.kyc.entity.TbClientMaster;
 import com.Infinitio.kyc.repository.TbClientMasterRepository;
 import com.Infinitio.kyc.utils.DTOService;
@@ -9,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -58,6 +62,65 @@ public class ClientService {
         } catch (Exception e) {
             logger.error("Error while fetching client with id ", id, e.getMessage());
             throw new RuntimeException("Failed to fetch client", e);
+        }
+    }
+
+
+    public ClientDTOAdd addClient(ClientDTOAdd clientDTO) {
+        try {
+            TbClientMaster client = new TbClientMaster();
+
+            // Set basic fields
+            client.setOrgName(clientDTO.getOrgName());
+            client.setEmailId(clientDTO.getEmailId());
+            client.setMobileNo(clientDTO.getMobileNo());
+            client.setPassword(clientDTO.getPassword()); // consider hashing
+            client.setExpiryDate(clientDTO.getExpiryDate());
+            client.setClientCount(clientDTO.getClientCount());
+            client.setAddress(clientDTO.getAddress());
+            client.setLogo(clientDTO.getLogo());
+            client.setPincode(clientDTO.getPincode());
+            client.setStatus(clientDTO.getStatus());
+            client.setIsEncrypted(clientDTO.getIsEncrypted());
+            client.setCreatedModifiedDate(java.time.LocalDateTime.now());
+            client.setClientId(1);
+            // 🔐 Generate secure API key
+            String apiKey = generateSecureApiKey(clientDTO.getEmailId(), clientDTO.getPassword());
+            client.setApiKey(apiKey);
+
+            // Save entity
+            TbClientMaster saved = clientRepository.save(client);
+
+            // Optionally return the same DTO back (excluding password)
+            ClientDTOAdd responseDTO = new ClientDTOAdd();
+            responseDTO.setOrgName(saved.getOrgName());
+            responseDTO.setEmailId(saved.getEmailId());
+            responseDTO.setMobileNo(saved.getMobileNo());
+            responseDTO.setExpiryDate(saved.getExpiryDate());
+            responseDTO.setClientCount(saved.getClientCount());
+            responseDTO.setAddress(saved.getAddress());
+            responseDTO.setLogo(saved.getLogo());
+            responseDTO.setPincode(saved.getPincode());
+            responseDTO.setStatus(saved.getStatus());
+            responseDTO.setIsEncrypted(saved.getIsEncrypted());
+
+            return responseDTO;
+
+        } catch (Exception e) {
+            logger.error("Error while adding client: {}", e.getMessage());
+            throw new RuntimeException("Failed to add client", e);
+        }
+    }
+
+
+    private String generateSecureApiKey(String email, String password) {
+        String raw = email + ":" + password + ":" + System.currentTimeMillis();
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(raw.getBytes(StandardCharsets.UTF_8));
+            return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating API key", e);
         }
     }
 
