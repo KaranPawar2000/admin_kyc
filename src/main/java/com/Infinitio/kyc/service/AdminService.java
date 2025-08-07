@@ -1,7 +1,10 @@
 package com.Infinitio.kyc.service;
 
 import com.Infinitio.kyc.dto.AdminDTO;
+import com.Infinitio.kyc.dto.AdminDTOAdd;
 import com.Infinitio.kyc.entity.TbAdminMaster;
+import com.Infinitio.kyc.entity.TbClientMaster;
+import com.Infinitio.kyc.entity.TbRoleMaster;
 import com.Infinitio.kyc.repository.TbAdminMasterRepository;
 import com.Infinitio.kyc.utils.DTOService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,5 +61,41 @@ public class AdminService {
             throw new RuntimeException("Failed to fetch admin", e);
         }
     }
+
+    public AdminDTO addAdmin(AdminDTOAdd adminDTOAdd) {
+        try {
+            logger.info("Adding new admin for client ID: {}", adminDTOAdd.getClientId());
+            TbAdminMaster admin = new TbAdminMaster();
+            admin.setName(adminDTOAdd.getName());
+            admin.setEmailId(adminDTOAdd.getEmailId());
+            admin.setPassword(adminDTOAdd.getPassword()); // Consider encrypting this
+            admin.setMobileNo(adminDTOAdd.getMobileNo());
+            admin.setIsActive(adminDTOAdd.getIsActive());
+            admin.setCreatedModifiedDate(java.time.LocalDateTime.now());
+            admin.setReadOnly("N");
+            admin.setArchiveFlag("F");
+
+            // Set client
+            TbClientMaster client = new TbClientMaster();
+            client.setId(adminDTOAdd.getClientId());
+            admin.setClient(client);
+            admin.setClientId(1);
+
+            // Set role
+            TbRoleMaster role = new TbRoleMaster();
+            role.setId(adminDTOAdd.getRoleId());
+            admin.setRole(role);
+
+            // Save to DB
+            TbAdminMaster saved = adminRepository.save(admin);
+            logger.info("Admin saved successfully with id {}", saved.getId());
+
+            return dtoService.convertAdminToDTO(saved);
+        } catch (Exception e) {
+            logger.error("Failed to add admin: {}", e.getMessage());
+            throw new RuntimeException("Failed to add admin", e);
+        }
+    }
+
 
 }

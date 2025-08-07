@@ -1,6 +1,7 @@
 package com.Infinitio.kyc.controller;
 
 import com.Infinitio.kyc.dto.AdminDTO;
+import com.Infinitio.kyc.dto.AdminDTOAdd;
 import com.Infinitio.kyc.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,13 @@ public class AdminController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+    @PostMapping("/add")
+    public ResponseEntity<AdminDTO> addAdmin(@RequestBody AdminDTOAdd adminDTOAdd) {
+        logger.info("Received request to add a new admin");
+        return ResponseEntity.ok(adminService.addAdmin(adminDTOAdd));
+    }
+
 
 }

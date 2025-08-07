@@ -18,9 +18,16 @@ public class TbClientMaster {
 
     private String address;
     private String pincode;
+
+    @Column(unique = true, nullable = false)
     private String emailId;
+
+    @Column(unique = true, nullable = false)
     private String mobileNo;
+
+    @Column(unique = true, nullable = false)
     private String password;
+
     private String apiKey;
 
     @ManyToOne
