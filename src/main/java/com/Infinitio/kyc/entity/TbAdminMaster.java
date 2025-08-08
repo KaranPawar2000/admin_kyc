@@ -15,6 +15,8 @@ public class TbAdminMaster {
     private Integer id;
 
     private String name;
+
+    @Column(unique = true, nullable = false)
     private String emailId;
 
     @ManyToOne
@@ -23,7 +25,11 @@ public class TbAdminMaster {
 
 
     private Byte isActive;
+
+    @Column(unique = true, nullable = false)
     private String password;
+
+    @Column(unique = true, nullable = false)
     private String mobileNo;
     private LocalDateTime createdModifiedDate;
     private String readOnly;

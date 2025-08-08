@@ -41,5 +41,13 @@ public class ClientController {
         return ResponseEntity.ok(savedClient);
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<ClientDTOAdd> updateClient(@PathVariable Integer id, @RequestBody ClientDTOAdd clientDTO) {
+        logger.info("Received request to update client with id: {}", id);
+        ClientDTOAdd updatedClient = clientService.updateClient(id, clientDTO);
+        return ResponseEntity.ok(updatedClient);
+    }
+
+
 
 }

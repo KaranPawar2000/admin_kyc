@@ -125,6 +125,69 @@ public class ClientService {
     }
 
 
+
+    public ClientDTOAdd updateClient(Integer id, ClientDTOAdd clientDTO) {
+        try {
+            TbClientMaster existingClient = clientRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
+
+            // Update fields
+            existingClient.setOrgName(clientDTO.getOrgName());
+            existingClient.setEmailId(clientDTO.getEmailId());
+            existingClient.setMobileNo(clientDTO.getMobileNo());
+            existingClient.setPassword(clientDTO.getPassword());
+            existingClient.setExpiryDate(clientDTO.getExpiryDate());
+            existingClient.setClientCount(clientDTO.getClientCount());
+            existingClient.setAddress(clientDTO.getAddress());
+            existingClient.setLogo(clientDTO.getLogo());
+            existingClient.setPincode(clientDTO.getPincode());
+            existingClient.setStatus(clientDTO.getStatus());
+            existingClient.setIsEncrypted(clientDTO.getIsEncrypted());
+            existingClient.setCreatedModifiedDate(java.time.LocalDateTime.now());
+            existingClient.setReadOnly("N");
+            existingClient.setArchiveFlag("F");
+
+            if (clientDTO.getRoleId() != null) {
+                TbRoleMaster role = new TbRoleMaster();
+                role.setId(clientDTO.getRoleId());
+                existingClient.setRole(role);
+            }
+
+            // Optionally regenerate API key
+            String newApiKey = generateSecureApiKey(clientDTO.getEmailId(), clientDTO.getPassword());
+            existingClient.setApiKey(newApiKey);
+
+            // Save changes
+            TbClientMaster updated = clientRepository.save(existingClient);
+
+            // Return updated response
+            ClientDTOAdd responseDTO = new ClientDTOAdd();
+            responseDTO.setOrgName(updated.getOrgName());
+            responseDTO.setEmailId(updated.getEmailId());
+            responseDTO.setMobileNo(updated.getMobileNo());
+            responseDTO.setExpiryDate(updated.getExpiryDate());
+            responseDTO.setClientCount(updated.getClientCount());
+            responseDTO.setAddress(updated.getAddress());
+            responseDTO.setLogo(updated.getLogo());
+            responseDTO.setPincode(updated.getPincode());
+            responseDTO.setStatus(updated.getStatus());
+            responseDTO.setIsEncrypted(updated.getIsEncrypted());
+            responseDTO.setApiKey(updated.getApiKey());
+            responseDTO.setReadOnly(updated.getReadOnly());
+            responseDTO.setArchiveFlag(updated.getArchiveFlag());
+            responseDTO.setRoleId(updated.getRole().getId());
+            responseDTO.setRoleName(updated.getRole().getName());
+
+            return responseDTO;
+
+        } catch (Exception e) {
+            logger.error("Error updating client with id {}: {}", id, e.getMessage());
+            throw new RuntimeException("Failed to update client", e);
+        }
+    }
+
+
+
     private String generateSecureApiKey(String email, String password) {
         String raw = email + ":" + password + ":" + System.currentTimeMillis();
         try {

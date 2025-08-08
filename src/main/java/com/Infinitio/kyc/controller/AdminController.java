@@ -45,5 +45,18 @@ public class AdminController {
         return ResponseEntity.ok(adminService.addAdmin(adminDTOAdd));
     }
 
+    @PutMapping("/update/{id}")
+    public ResponseEntity<AdminDTO> updateAdmin(@PathVariable Integer id, @RequestBody AdminDTOAdd adminDTOAdd) {
+        logger.info("Received request to update admin with id: {}", id);
+        try {
+            AdminDTO updatedAdmin = adminService.updateAdmin(id, adminDTOAdd);
+            return ResponseEntity.ok(updatedAdmin);
+        } catch (RuntimeException e) {
+            logger.error("Failed to update admin: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
 
 }

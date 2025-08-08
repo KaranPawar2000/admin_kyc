@@ -97,5 +97,34 @@ public class AdminService {
         }
     }
 
+    public AdminDTO updateAdmin(Integer id, AdminDTOAdd adminDTOAdd) {
+        try {
+            TbAdminMaster existingAdmin = adminRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Admin not found with id: " + id));
+
+            existingAdmin.setName(adminDTOAdd.getName());
+            existingAdmin.setEmailId(adminDTOAdd.getEmailId());
+            existingAdmin.setMobileNo(adminDTOAdd.getMobileNo());
+            existingAdmin.setPassword(adminDTOAdd.getPassword()); // Consider encrypting
+            existingAdmin.setIsActive(adminDTOAdd.getIsActive());
+            existingAdmin.setCreatedModifiedDate(java.time.LocalDateTime.now());
+
+
+
+            // Update role reference
+            TbRoleMaster role = new TbRoleMaster();
+            role.setId(adminDTOAdd.getRoleId());
+            existingAdmin.setRole(role);
+
+            TbAdminMaster updated = adminRepository.save(existingAdmin);
+            return dtoService.convertAdminToDTO(updated);
+
+        } catch (Exception e) {
+            logger.error("Error updating admin with id {}: {}", id, e.getMessage());
+            throw new RuntimeException("Failed to update admin", e);
+        }
+    }
+
+
 
 }
