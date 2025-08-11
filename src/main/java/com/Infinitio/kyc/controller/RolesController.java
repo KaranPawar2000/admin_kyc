@@ -39,4 +39,29 @@ public class RolesController {
         return ResponseEntity.ok(formList);
     }
 
+    @PostMapping("/add")
+    public ResponseEntity<?> addRole(@RequestBody RoleDTO roleDTO) {
+        logger.info("Received request to add new role: {}", roleDTO.getName());
+        try {
+            RoleDTO savedRoleDTO = rolesService.addRole(roleDTO);  // return saved RoleDTO
+            return ResponseEntity.ok(savedRoleDTO);
+        } catch (Exception e) {
+            logger.error("Error adding role: {}", e.getMessage());
+            return ResponseEntity.status(500).body("Failed to add role: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<?> updateRole(@PathVariable Integer id, @RequestBody RoleDTO roleDTO) {
+        logger.info("Received request to update role ID: {}", id);
+        try {
+            RoleDTO updatedRole = rolesService.updateRole(id, roleDTO);
+            return ResponseEntity.ok(updatedRole);
+        } catch (Exception e) {
+            logger.error("Error updating role: {}", e.getMessage());
+            return ResponseEntity.status(500).body("Failed to update role: " + e.getMessage());
+        }
+    }
+
+
 }

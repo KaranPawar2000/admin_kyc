@@ -36,14 +36,14 @@ public class DTOService {
         return dto;
     }
 
-    public RoleDTO convertRoleToDTO(TbRoleMaster role) {
-        RoleDTO dto = new RoleDTO();
-        dto.setId(role.getId());
-        dto.setName(role.getName());
-        dto.setStatus(role.getStatus());
-        dto.setDescription(role.getDescription());
-        return dto;
-    }
+//    public RoleDTO convertRoleToDTO(TbRoleMaster role) {
+//        RoleDTO dto = new RoleDTO();
+//        dto.setId(role.getId());
+//        dto.setName(role.getName());
+//        dto.setStatus(role.getStatus());
+//        dto.setDescription(role.getDescription());
+//        return dto;
+//    }
 
     public RoleFormDTO convertRoleDetailToRoleFormDTO(TbRoleDetails details) {
         RoleFormDTO dto = new RoleFormDTO();
@@ -76,6 +76,29 @@ public class DTOService {
 
         if (admin.getClient() != null) {
             dto.setClientId(admin.getClient().getId());
+        }
+
+        return dto;
+    }
+
+    public RoleDTO convertRoleToDTO(TbRoleMaster role) {
+        RoleDTO dto = new RoleDTO();
+        dto.setId(role.getId());
+        dto.setName(role.getName());
+        dto.setStatus(role.getStatus());
+        dto.setDescription(role.getDescription());
+        dto.setShortCode(role.getShortCode());
+        dto.setParentRoleId(role.getParentRoleId());
+        dto.setSequenceNo(role.getSequenceNo());
+        dto.setParentId(role.getParentId());
+        dto.setParentName(role.getParentName());
+        dto.setType(role.getType());
+        dto.setReadOnly(role.getReadOnly());
+        dto.setArchiveFlag(role.getArchiveFlag());
+        dto.setStartPage(role.getStartPage());
+
+        if (role.getClient() != null) {
+            dto.setClientId(role.getClient().getId());
         }
 
         return dto;

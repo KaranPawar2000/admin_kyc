@@ -2,8 +2,10 @@ package com.Infinitio.kyc.service;
 
 import com.Infinitio.kyc.dto.RoleDTO;
 import com.Infinitio.kyc.dto.RoleFormDTO;
+import com.Infinitio.kyc.entity.TbClientMaster;
 import com.Infinitio.kyc.entity.TbRoleDetails;
 import com.Infinitio.kyc.entity.TbRoleMaster;
+import com.Infinitio.kyc.repository.TbClientMasterRepository;
 import com.Infinitio.kyc.repository.TbRoleDetailsRepository;
 import com.Infinitio.kyc.repository.TbRoleMasterRepository;
 import com.Infinitio.kyc.utils.DTOService;
@@ -35,6 +37,9 @@ public class RolesService {
     @Autowired
     private TbRoleMasterRepository roleRepository;
 
+
+    @Autowired
+    private TbClientMasterRepository clientMasterRepository;
 
     public List<RoleDTO> getAllRoles() {
         try {
@@ -72,6 +77,64 @@ public class RolesService {
         return roleDetailsList.stream()
                 .map(dtoService::convertRoleDetailToRoleFormDTO)
                 .collect(Collectors.toList());
+    }
+
+
+
+
+    public RoleDTO addRole(RoleDTO roleDTO) {
+        logger.info("Adding new role: {}", roleDTO.getName());
+
+        TbRoleMaster role = new TbRoleMaster();
+        role.setName(roleDTO.getName());
+        role.setShortCode(roleDTO.getShortCode());
+        role.setParentRoleId(roleDTO.getParentRoleId());
+        role.setStatus(roleDTO.getStatus());
+        role.setSequenceNo(roleDTO.getSequenceNo());
+        role.setParentId(roleDTO.getParentId());
+        role.setParentName(roleDTO.getParentName());
+        role.setType(roleDTO.getType());
+        role.setDescription(roleDTO.getDescription());
+        role.setReadOnly(roleDTO.getReadOnly());
+        role.setArchiveFlag(roleDTO.getArchiveFlag());
+        role.setStartPage(roleDTO.getStartPage());
+        role.setCreatedModifiedDate(java.time.LocalDateTime.now());
+
+        TbClientMaster client = clientMasterRepository.findById(roleDTO.getClientId())
+                .orElseThrow(() -> new RuntimeException("Client not found with ID: " + roleDTO.getClientId()));
+        role.setClient(client);
+
+        TbRoleMaster savedRole = roleRepository.save(role);
+        logger.info("Role saved successfully with ID {}", savedRole.getId());
+
+        return dtoService.convertRoleToDTO(savedRole);  // convert saved entity back to RoleDTO
+    }
+
+
+    public RoleDTO updateRole(Integer id, RoleDTO roleDTO) {
+        TbRoleMaster role = roleRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role not found with ID: " + id));
+
+        role.setName(roleDTO.getName());
+        role.setShortCode(roleDTO.getShortCode());
+        role.setParentRoleId(roleDTO.getParentRoleId());
+        role.setStatus(roleDTO.getStatus());
+        role.setSequenceNo(roleDTO.getSequenceNo());
+        role.setParentId(roleDTO.getParentId());
+        role.setParentName(roleDTO.getParentName());
+        role.setType(roleDTO.getType());
+        role.setDescription(roleDTO.getDescription());
+        role.setReadOnly(roleDTO.getReadOnly());
+        role.setArchiveFlag(roleDTO.getArchiveFlag());
+        role.setStartPage(roleDTO.getStartPage());
+        role.setCreatedModifiedDate(java.time.LocalDateTime.now());
+
+        TbClientMaster client = clientMasterRepository.findById(roleDTO.getClientId())
+                .orElseThrow(() -> new RuntimeException("Client not found with ID: " + roleDTO.getClientId()));
+        role.setClient(client);
+
+        TbRoleMaster updatedRole = roleRepository.save(role);
+        return dtoService.convertRoleToDTO(updatedRole);
     }
 
 
