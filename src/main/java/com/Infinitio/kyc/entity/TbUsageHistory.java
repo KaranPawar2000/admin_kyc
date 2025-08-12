@@ -38,5 +38,7 @@ public class TbUsageHistory {
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
     private TbClientMaster client;
+
+    private String vendorRequestBody;
 }
 

@@ -2,11 +2,13 @@ package com.Infinitio.kyc.entity;
 
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_api_type_master")
+@Data
 public class TbApiTypeMaster {
 
     @Id
