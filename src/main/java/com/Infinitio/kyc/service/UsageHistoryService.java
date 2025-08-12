@@ -25,6 +25,14 @@ public class UsageHistoryService {
                 .collect(Collectors.toList());
     }
 
+
+    public UsageHistoryDTO getUsageHistoryById(Integer id) {
+        TbUsageHistory history = usageHistoryRepository.findById(id)
+                .orElseThrow(() -> new OurException("Usage history not found with id: " + id));
+
+        return convertToDTO(history);
+    }
+
     private UsageHistoryDTO convertToDTO(TbUsageHistory history) {
         UsageHistoryDTO dto = new UsageHistoryDTO();
         dto.setId(history.getId());
@@ -43,4 +51,6 @@ public class UsageHistoryService {
         dto.setVendorRequestBody(history.getVendorRequestBody());
         return dto;
     }
+
+
 }
