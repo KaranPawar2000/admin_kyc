@@ -125,13 +125,28 @@ public class ClientService {
     }
 
 
-
     public ClientDTOAdd updateClient(Integer id, ClientDTOAdd clientDTO) {
+        // Validate mandatory fields
+        if (clientDTO.getOrgName() == null || clientDTO.getOrgName().trim().isEmpty() ||
+                clientDTO.getEmailId() == null || clientDTO.getEmailId().trim().isEmpty() ||
+                clientDTO.getMobileNo() == null || clientDTO.getMobileNo().trim().isEmpty() ||
+                clientDTO.getPassword() == null || clientDTO.getPassword().trim().isEmpty() ||
+                clientDTO.getExpiryDate() == null ||
+                clientDTO.getClientCount() == null ||
+                clientDTO.getAddress() == null || clientDTO.getAddress().trim().isEmpty() ||
+                clientDTO.getLogo() == null || clientDTO.getLogo().trim().isEmpty() ||
+                clientDTO.getPincode() == null || clientDTO.getPincode().trim().isEmpty() ||
+                clientDTO.getStatus() == null ||
+                clientDTO.getIsEncrypted() == null || // Ensure isEncrypted is Byte, not byte
+                clientDTO.getRoleId() == null
+        ) {
+            throw new RuntimeException("All fields are mandatory for update");
+        }
+
         try {
             TbClientMaster existingClient = clientRepository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
 
-            // Update fields
             existingClient.setOrgName(clientDTO.getOrgName());
             existingClient.setEmailId(clientDTO.getEmailId());
             existingClient.setMobileNo(clientDTO.getMobileNo());
@@ -147,20 +162,15 @@ public class ClientService {
             existingClient.setReadOnly("N");
             existingClient.setArchiveFlag("F");
 
-            if (clientDTO.getRoleId() != null) {
-                TbRoleMaster role = new TbRoleMaster();
-                role.setId(clientDTO.getRoleId());
-                existingClient.setRole(role);
-            }
+            TbRoleMaster role = new TbRoleMaster();
+            role.setId(clientDTO.getRoleId());
+            existingClient.setRole(role);
 
-            // Optionally regenerate API key
             String newApiKey = generateSecureApiKey(clientDTO.getEmailId(), clientDTO.getPassword());
             existingClient.setApiKey(newApiKey);
 
-            // Save changes
             TbClientMaster updated = clientRepository.save(existingClient);
 
-            // Return updated response
             ClientDTOAdd responseDTO = new ClientDTOAdd();
             responseDTO.setOrgName(updated.getOrgName());
             responseDTO.setEmailId(updated.getEmailId());

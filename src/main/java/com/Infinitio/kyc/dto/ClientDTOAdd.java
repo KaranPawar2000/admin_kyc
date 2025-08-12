@@ -17,7 +17,7 @@ public class ClientDTOAdd {
     private String logo;
     private String pincode;
     private Byte status;
-    private byte isEncrypted;
+    private Byte isEncrypted;
     private String apiKey;
     private String archiveFlag;
     private String readOnly;

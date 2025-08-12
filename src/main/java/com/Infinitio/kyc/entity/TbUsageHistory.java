@@ -1,11 +1,13 @@
 package com.Infinitio.kyc.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tb_usage_history")
+@Data
 public class TbUsageHistory {
 
     @Id
