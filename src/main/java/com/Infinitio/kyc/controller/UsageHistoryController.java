@@ -1,5 +1,6 @@
 package com.Infinitio.kyc.controller;
 
+import com.Infinitio.kyc.dto.ClientApiUsageCount;
 import com.Infinitio.kyc.dto.UsageHistoryDTO;
 import com.Infinitio.kyc.service.UsageHistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,4 +44,10 @@ public class UsageHistoryController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/client-wise-count")
+    public ResponseEntity<List<ClientApiUsageCount>> getClientWiseApiUsageCount() {
+        return ResponseEntity.ok(usageHistoryService.getClientWiseApiUsageCount());
+    }
+
 }

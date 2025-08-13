@@ -1,19 +1,28 @@
 // UsageHistoryService.java
 package com.Infinitio.kyc.service;
 
+import com.Infinitio.kyc.dto.ClientApiUsageCount;
 import com.Infinitio.kyc.dto.UsageHistoryDTO;
 import com.Infinitio.kyc.entity.TbUsageHistory;
 import com.Infinitio.kyc.exception.OurException;
 import com.Infinitio.kyc.repository.TbUsageHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class UsageHistoryService {
     @Autowired
     private TbUsageHistoryRepository usageHistoryRepository;
+
+    public UsageHistoryService(TbUsageHistoryRepository usageHistoryRepository) {
+        this.usageHistoryRepository = usageHistoryRepository;
+    }
 
     public List<UsageHistoryDTO> getAllUsageHistory() {
         List<TbUsageHistory> usageHistories = usageHistoryRepository.findAll();
@@ -32,6 +41,29 @@ public class UsageHistoryService {
 
         return convertToDTO(history);
     }
+
+
+    public List<ClientApiUsageCount> getClientWiseApiUsageCount() {
+        List<Object[]> results = usageHistoryRepository.getClientWiseApiUsageCount();
+        Map<Integer, ClientApiUsageCount> clientMap = new HashMap<>();
+
+        for (Object[] row : results) {
+            Integer clientId = ((Number) row[0]).intValue();
+            String clientName = (String) row[1];
+            String apiName = (String) row[2];
+            Long count = ((Number) row[3]).longValue();
+
+            ClientApiUsageCount clientCount = clientMap.computeIfAbsent(
+                    clientId,
+                    k -> new ClientApiUsageCount(clientId, clientName)
+            );
+
+            clientCount.getApiCounts().put(apiName, count);
+        }
+
+        return new ArrayList<>(clientMap.values());
+    }
+
 
     private UsageHistoryDTO convertToDTO(TbUsageHistory history) {
         UsageHistoryDTO dto = new UsageHistoryDTO();

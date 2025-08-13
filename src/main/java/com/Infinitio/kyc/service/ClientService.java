@@ -127,21 +127,21 @@ public class ClientService {
 
     public ClientDTOAdd updateClient(Integer id, ClientDTOAdd clientDTO) {
         // Validate mandatory fields
-        if (clientDTO.getOrgName() == null || clientDTO.getOrgName().trim().isEmpty() ||
-                clientDTO.getEmailId() == null || clientDTO.getEmailId().trim().isEmpty() ||
-                clientDTO.getMobileNo() == null || clientDTO.getMobileNo().trim().isEmpty() ||
-                clientDTO.getPassword() == null || clientDTO.getPassword().trim().isEmpty() ||
-                clientDTO.getExpiryDate() == null ||
-                clientDTO.getClientCount() == null ||
-                clientDTO.getAddress() == null || clientDTO.getAddress().trim().isEmpty() ||
-                clientDTO.getLogo() == null || clientDTO.getLogo().trim().isEmpty() ||
-                clientDTO.getPincode() == null || clientDTO.getPincode().trim().isEmpty() ||
-                clientDTO.getStatus() == null ||
-                clientDTO.getIsEncrypted() == null || // Ensure isEncrypted is Byte, not byte
-                clientDTO.getRoleId() == null
-        ) {
-            throw new RuntimeException("All fields are mandatory for update");
-        }
+//        if (clientDTO.getOrgName() == null || clientDTO.getOrgName().trim().isEmpty() ||
+//                clientDTO.getEmailId() == null || clientDTO.getEmailId().trim().isEmpty() ||
+//                clientDTO.getMobileNo() == null || clientDTO.getMobileNo().trim().isEmpty() ||
+//                clientDTO.getPassword() == null || clientDTO.getPassword().trim().isEmpty() ||
+//                clientDTO.getExpiryDate() == null ||
+//                clientDTO.getClientCount() == null ||
+//                clientDTO.getAddress() == null || clientDTO.getAddress().trim().isEmpty() ||
+//                clientDTO.getLogo() == null || clientDTO.getLogo().trim().isEmpty() ||
+//                clientDTO.getPincode() == null || clientDTO.getPincode().trim().isEmpty() ||
+//                clientDTO.getStatus() == null ||
+//                clientDTO.getIsEncrypted() == null || // Ensure isEncrypted is Byte, not byte
+//                clientDTO.getRoleId() == null
+//        ) {
+//            throw new RuntimeException("All fields are mandatory for update");
+//        }
 
         try {
             TbClientMaster existingClient = clientRepository.findById(id)
