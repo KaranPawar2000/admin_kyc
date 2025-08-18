@@ -1,9 +1,9 @@
 package com.Infinitio.kyc.service;
 
-import com.Infinitio.kyc.dto.ClientDTO;
-import com.Infinitio.kyc.dto.ClientDTOAdd;
+import com.Infinitio.kyc.dto.*;
 import com.Infinitio.kyc.entity.TbClientMaster;
 import com.Infinitio.kyc.entity.TbRoleMaster;
+import com.Infinitio.kyc.exception.OurException;
 import com.Infinitio.kyc.repository.TbClientMasterRepository;
 import com.Infinitio.kyc.utils.DTOService;
 import org.slf4j.Logger;
@@ -209,6 +209,47 @@ public class ClientService {
         }
     }
 
+    public ClientLoginResponse login(AdminLoginRequest request) {
+        logger.info("Processing client login request for email: {}", request.getEmailId());
+
+        TbClientMaster client = clientRepository
+                .findByEmailIdAndPassword(request.getEmailId(), request.getPassword())
+                .orElseThrow(() -> {
+                    logger.error("Login failed for client email: {}", request.getEmailId());
+                    return new OurException("Invalid credentials");
+                });
+
+        if (client.getStatus() == 0) {
+            logger.error("Inactive client account: {}", request.getEmailId());
+            throw new OurException("Account is inactive");
+        }
+
+        ClientLoginResponse response = new ClientLoginResponse();
+        response.setOrgName(client.getOrgName());
+        response.setRoleId(client.getRole() != null ? client.getRole().getId() : null);
+        response.setId(client.getId());
+
+        logger.info("Client login successful for email: {}", request.getEmailId());
+        return response;
+    }
+
+
+    public void updatePassword(Integer id, ClientPasswordUpdateRequest request) {
+        TbClientMaster client = clientRepository.findById(id)
+                .orElseThrow(() -> new OurException("Client not found with id: " + id));
+
+        // ✅ Update new password
+        client.setPassword(request.getNewPassword());
+
+        // ✅ Generate new API key since password changed
+        String newApiKey = generateSecureApiKey(client.getEmailId(), request.getNewPassword());
+        client.setApiKey(newApiKey);
+
+        client.setCreatedModifiedDate(java.time.LocalDateTime.now());
+        clientRepository.save(client);
+
+        logger.info("Password updated successfully for client id: {}", id);
+    }
 
 
 }

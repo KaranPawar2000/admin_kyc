@@ -2,9 +2,12 @@ package com.Infinitio.kyc.service;
 
 import com.Infinitio.kyc.dto.AdminDTO;
 import com.Infinitio.kyc.dto.AdminDTOAdd;
+import com.Infinitio.kyc.dto.AdminLoginRequest;
+import com.Infinitio.kyc.dto.AdminLoginResponse;
 import com.Infinitio.kyc.entity.TbAdminMaster;
 import com.Infinitio.kyc.entity.TbClientMaster;
 import com.Infinitio.kyc.entity.TbRoleMaster;
+import com.Infinitio.kyc.exception.OurException;
 import com.Infinitio.kyc.repository.TbAdminMasterRepository;
 import com.Infinitio.kyc.utils.DTOService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -125,6 +128,27 @@ public class AdminService {
         }
     }
 
+    public AdminLoginResponse login(AdminLoginRequest request) {
+        logger.info("Processing login request for email: {}", request.getEmailId());
 
+        TbAdminMaster admin = adminRepository.findByEmailIdAndPassword(request.getEmailId(), request.getPassword())
+                .orElseThrow(() -> {
+                    logger.error("Login failed for email: {}", request.getEmailId());
+                    return new OurException("Invalid credentials");
+                });
+
+        if (admin.getIsActive() == 0) {
+            logger.error("Inactive admin account: {}", request.getEmailId());
+            throw new OurException("Account is inactive");
+        }
+
+        AdminLoginResponse response = new AdminLoginResponse();
+        response.setName(admin.getName());
+        response.setRoleId(admin.getRole().getId());
+        response.setUserId(admin.getClientId());
+
+        logger.info("Login successful for email: {}", request.getEmailId());
+        return response;
+    }
 
 }

@@ -1,8 +1,9 @@
 package com.Infinitio.kyc.controller;
 
-import com.Infinitio.kyc.dto.ClientDTO;
-import com.Infinitio.kyc.dto.ClientDTOAdd;
+import com.Infinitio.kyc.dto.*;
+import com.Infinitio.kyc.exception.OurException;
 import com.Infinitio.kyc.service.ClientService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,38 @@ public class ClientController {
         return ResponseEntity.ok(updatedClient);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<ClientLoginResponse> login(@RequestBody @Valid AdminLoginRequest request) {
+        logger.info("Received client login request for email: {}", request.getEmailId());
+        try {
+            ClientLoginResponse response = clientService.login(request);
+            return ResponseEntity.ok(response);
+        } catch (OurException e) {
+            logger.error("Client login failed: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error during client login: {}", e.getMessage());
+            throw new OurException("Internal server error");
+        }
+    }
+
+
+    @PatchMapping("/update-password/{id}")
+    public ResponseEntity<String> updatePassword(
+            @PathVariable Integer id,
+            @RequestBody ClientPasswordUpdateRequest request) {
+        logger.info("Received request to update password for client id: {}", id);
+        try {
+            clientService.updatePassword(id, request);
+            return ResponseEntity.ok("Password updated successfully");
+        } catch (OurException e) {
+            logger.error("Password update failed for client id {}: {}", id, e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error while updating password for client id {}: {}", id, e.getMessage());
+            throw new OurException("Internal server error");
+        }
+    }
 
 
 }

@@ -2,13 +2,16 @@ package com.Infinitio.kyc.controller;
 
 import com.Infinitio.kyc.dto.AdminDTO;
 import com.Infinitio.kyc.dto.AdminDTOAdd;
+import com.Infinitio.kyc.dto.AdminLoginRequest;
+import com.Infinitio.kyc.dto.AdminLoginResponse;
+import com.Infinitio.kyc.exception.OurException;
 import com.Infinitio.kyc.service.AdminService;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -38,7 +41,6 @@ public class AdminController {
         }
     }
 
-
     @PostMapping("/add")
     public ResponseEntity<AdminDTO> addAdmin(@RequestBody AdminDTOAdd adminDTOAdd) {
         logger.info("Received request to add a new admin");
@@ -57,6 +59,19 @@ public class AdminController {
         }
     }
 
-
-
+    @PostMapping("/login")
+    public ResponseEntity<AdminLoginResponse> login(@RequestBody @Valid AdminLoginRequest request) {
+        logger.info("Received login request for email: {}", request.getEmailId());
+        try {
+            AdminLoginResponse response = adminService.login(request);
+            logger.info("Login successful for email: {}", request.getEmailId());
+            return ResponseEntity.ok(response);
+        } catch (OurException e) {
+            logger.error("Login failed: {}", e.getMessage());
+            throw e;
+        } catch (Exception e) {
+            logger.error("Unexpected error during login: {}", e.getMessage());
+            throw new OurException("Internal server error");
+        }
+    }
 }
