@@ -1,7 +1,6 @@
 package com.Infinitio.kyc.service;
 
-import com.Infinitio.kyc.dto.RoleDTO;
-import com.Infinitio.kyc.dto.RoleFormDTO;
+import com.Infinitio.kyc.dto.*;
 import com.Infinitio.kyc.entity.TbClientMaster;
 import com.Infinitio.kyc.entity.TbRoleDetails;
 import com.Infinitio.kyc.entity.TbRoleMaster;
@@ -15,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -136,6 +137,67 @@ public class RolesService {
         TbRoleMaster updatedRole = roleRepository.save(role);
         return dtoService.convertRoleToDTO(updatedRole);
     }
+
+    public RoleFormDTO updateRoleDetails(Integer id, RoleDetailUpdateRequest request) {
+        TbRoleDetails roleDetail = roleDetailsRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Role detail not found with ID: " + id));
+
+        // ✅ Update only required fields
+        if (request.getShowInMenu() != null) {
+            roleDetail.setShowInMenu(request.getShowInMenu());
+        }
+        if (request.getSeqNo() != null) {
+            roleDetail.setSeqNo(request.getSeqNo());
+        }
+        if (request.getIsAllowed() != null) {
+            roleDetail.setIsAllowed(request.getIsAllowed());
+        }
+
+        roleDetail.setCreatedModifiedDate(java.time.LocalDateTime.now());
+
+        TbRoleDetails updated = roleDetailsRepository.save(roleDetail);
+
+        return dtoService.convertRoleDetailToRoleFormDTO(updated);
+    }
+    public List<RoleFormDTO> updateMultipleFormsForRole(BulkRoleFormsUpdateRequest request) {
+        logger.info("Updating multiple forms for role ID: {}", request.getRoleId());
+
+        // Verify the role exists
+        TbRoleMaster role = roleRepository.findById(request.getRoleId())
+                .orElseThrow(() -> new RuntimeException("Role not found with ID: " + request.getRoleId()));
+
+        List<TbRoleDetails> updatedDetails = new ArrayList<>();
+
+        for (RoleFormUpdateDTO update : request.getFormUpdates()) {
+            // Find the role detail for this role and form combination
+            TbRoleDetails roleDetail = roleDetailsRepository.findByRoleIdAndFormId(request.getRoleId(), update.getFormId())
+                    .orElseThrow(() -> new RuntimeException(
+                            String.format("Role detail not found for role ID %d and form ID %d",
+                                    request.getRoleId(), update.getFormId())));
+
+            // Update fields if they're provided
+            if (update.getSeqNo() != null) {
+                roleDetail.setSeqNo(update.getSeqNo());
+            }
+            if (update.getIsAllowed() != null) {
+                roleDetail.setIsAllowed(update.getIsAllowed());
+            }
+            if (update.getShowInMenu() != null) {
+                roleDetail.setShowInMenu(update.getShowInMenu());
+            }
+            roleDetail.setCreatedModifiedDate(LocalDateTime.now());
+
+            updatedDetails.add(roleDetail);
+        }
+
+        // Save all updates
+        List<TbRoleDetails> savedDetails = roleDetailsRepository.saveAll(updatedDetails);
+
+        return savedDetails.stream()
+                .map(dtoService::convertRoleDetailToRoleFormDTO)
+                .collect(Collectors.toList());
+    }
+
 
 
 }

@@ -1,5 +1,6 @@
 package com.Infinitio.kyc.controller;
 
+import com.Infinitio.kyc.dto.BulkRoleFormsUpdateRequest;
 import com.Infinitio.kyc.dto.RoleDTO;
 import com.Infinitio.kyc.dto.RoleFormDTO;
 import com.Infinitio.kyc.service.RolesService;
@@ -60,6 +61,18 @@ public class RolesController {
         } catch (Exception e) {
             logger.error("Error updating role: {}", e.getMessage());
             return ResponseEntity.status(500).body("Failed to update role: " + e.getMessage());
+        }
+    }
+
+    @PatchMapping("/forms/bulk-update")
+    public ResponseEntity<?> updateMultipleFormsForRole(@RequestBody BulkRoleFormsUpdateRequest request) {
+        logger.info("Received request to update multiple forms for role ID: {}", request.getRoleId());
+        try {
+            List<RoleFormDTO> updatedForms = rolesService.updateMultipleFormsForRole(request);
+            return ResponseEntity.ok(updatedForms);
+        } catch (Exception e) {
+            logger.error("Error updating forms for role ID {}: {}", request.getRoleId(), e.getMessage());
+            return ResponseEntity.status(500).body("Failed to update forms: " + e.getMessage());
         }
     }
 
