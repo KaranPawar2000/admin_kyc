@@ -48,6 +48,7 @@ public class DTOService {
     public RoleFormDTO convertRoleDetailToRoleFormDTO(TbRoleDetails details) {
         RoleFormDTO dto = new RoleFormDTO();
         dto.setFormName(details.getForm().getName());
+        dto.setFormId(details.getForm().getId());
         dto.setFormLink(details.getForm().getLink());
         dto.setCreatedModifiedDate(details.getCreatedModifiedDate());
         dto.setShowInMenu(details.getShowInMenu());
