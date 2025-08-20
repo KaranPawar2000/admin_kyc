@@ -64,6 +64,32 @@ public class UsageHistoryService {
         return new ArrayList<>(clientMap.values());
     }
 
+    public ClientApiUsageCount getClientWiseApiUsageCountById(Integer clientId) {
+        List<Object[]> results = usageHistoryRepository.getClientWiseApiUsageCountById(clientId);
+
+        if (results.isEmpty()) {
+            throw new OurException("No usage history found for clientId: " + clientId);
+        }
+
+        ClientApiUsageCount clientCount = null;
+
+        for (Object[] row : results) {
+            Integer cId = ((Number) row[0]).intValue();
+            String clientName = (String) row[1];
+            String apiName = (String) row[2];
+            Long count = ((Number) row[3]).longValue();
+
+            if (clientCount == null) {
+                clientCount = new ClientApiUsageCount(cId, clientName);
+            }
+
+            clientCount.getApiCounts().put(apiName, count);
+        }
+
+        return clientCount;
+    }
+
+
 
     private UsageHistoryDTO convertToDTO(TbUsageHistory history) {
         UsageHistoryDTO dto = new UsageHistoryDTO();

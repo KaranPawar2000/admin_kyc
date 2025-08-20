@@ -82,5 +82,15 @@ public class ClientController {
         }
     }
 
+    @GetMapping("/{id}/api-key")
+    public ResponseEntity<String> getApiKeyById(@PathVariable Integer id) {
+        logger.info("Received request to fetch API key for client id: {}", id);
+        String apiKey = clientService.getApiKeyById(id);
+        return apiKey != null
+                ? ResponseEntity.ok(apiKey)
+                : ResponseEntity.notFound().build();
+    }
+
+
 
 }

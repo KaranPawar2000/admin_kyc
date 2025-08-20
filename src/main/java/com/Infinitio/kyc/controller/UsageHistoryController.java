@@ -50,4 +50,17 @@ public class UsageHistoryController {
         return ResponseEntity.ok(usageHistoryService.getClientWiseApiUsageCount());
     }
 
+    @GetMapping("/client-wise-count/{clientId}")
+    public ResponseEntity<Map<String, Object>> getClientWiseApiUsageCountById(@PathVariable Integer clientId) {
+        ClientApiUsageCount report = usageHistoryService.getClientWiseApiUsageCountById(clientId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "200");
+        response.put("message", "Success");
+        response.put("data", report);
+
+        return ResponseEntity.ok(response);
+    }
+
+
 }

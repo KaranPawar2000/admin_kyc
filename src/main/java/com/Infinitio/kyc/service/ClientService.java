@@ -252,4 +252,18 @@ public class ClientService {
     }
 
 
+    public String getApiKeyById(Integer id) {
+        try {
+            logger.info("Fetching API key for client with id: {}", id);
+            TbClientMaster client = clientRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Client not found with id: " + id));
+            return client.getApiKey();
+        } catch (Exception e) {
+            logger.error("Error while fetching API key for client with id {}: {}", id, e.getMessage());
+            throw new RuntimeException("Failed to fetch API key", e);
+        }
+    }
+
+
+
 }
