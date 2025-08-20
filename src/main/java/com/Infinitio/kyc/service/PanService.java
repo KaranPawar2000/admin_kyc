@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -34,7 +35,11 @@ public class PanService {
     @Autowired
     private TbApiTypeMasterRepository apiTypeMasterRepository;
 
+    @Value("${app.surepass.bearer.token}")
+    private String bearerToken;
 
+    @Value("${app.surepass.pan.api.url}")
+    private String surepassApiUrl;
 
 
     public PanResponse verifyAndPersist(PanRequest panRequest, String apiKey) {
@@ -54,12 +59,12 @@ public class PanService {
         // Call external API
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyNTQzNDI1NCwianRpIjoiZWU1NGE3YTktNTY0OS00MzkyLTllYTItYjhkNDNhNDY1MDA0IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmluZmluaXRpb0BzdXJlcGFzcy5pbyIsIm5iZiI6MTcyNTQzNDI1NCwiZXhwIjoyMzU2MTU0MjU0LCJlbWFpbCI6ImluZmluaXRpb0BzdXJlcGFzcy5pbyIsInRlbmFudF9pZCI6Im1haW4iLCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.qvbVu_z4jaEvbgfmhTimWwJZhQkp27oVp_a6fja8Yz0");
+        headers.set("Authorization", "Bearer " +bearerToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
 
         ResponseEntity<String> externalResponse = restTemplate.postForEntity(
-                "https://kyc-api.surepass.app/api/v1/pan/pan-comprehensive", entity, String.class);
+                surepassApiUrl, entity, String.class);
 
         JsonNode root;
         JsonNode dataNode;

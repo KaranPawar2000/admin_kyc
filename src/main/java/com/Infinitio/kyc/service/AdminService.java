@@ -145,7 +145,7 @@ public class AdminService {
         AdminLoginResponse response = new AdminLoginResponse();
         response.setName(admin.getName());
         response.setRoleId(admin.getRole().getId());
-        response.setUserId(admin.getClientId());
+        response.setUserId(admin.getClient().getId());
 
         logger.info("Login successful for email: {}", request.getEmailId());
         return response;
