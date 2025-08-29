@@ -89,6 +89,19 @@ public class UsageHistoryService {
         return clientCount;
     }
 
+    public List<UsageHistoryDTO> getUsageHistoryByClientId(Integer clientId) {
+        List<TbUsageHistory> usageHistories = usageHistoryRepository.findByClientId(clientId);
+
+        if (usageHistories.isEmpty()) {
+            throw new OurException("No usage history found for clientId: " + clientId);
+        }
+
+        return usageHistories.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+
 
 
     private UsageHistoryDTO convertToDTO(TbUsageHistory history) {

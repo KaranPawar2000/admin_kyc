@@ -1,6 +1,7 @@
 package com.Infinitio.kyc.controller;
 
 
+import com.Infinitio.kyc.dto.AadhaarInitializeRequest;
 import com.Infinitio.kyc.service.AadhaarService;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +25,12 @@ public class AadharController {
      * Initialize the Digilocker flow.
      * Your frontend can use the returned token (if needed by SDK) and client_id.
      */
+
     @PostMapping("/initialize")
-    public ResponseEntity<Map<String, Object>> initialize(
-            @RequestParam(name = "signupFlow", defaultValue = "true") boolean signupFlow,
-            @RequestParam(name = "skipMainScreen", defaultValue = "false") boolean skipMainScreen,
-            @RequestParam(name = "logoUrl", required = false) String logoUrl
-    ) {
-        Map<String, Object> response = aadhaarService.initializeDigilocker(signupFlow, skipMainScreen, logoUrl);
+    public ResponseEntity<Map<String, Object>> initialize(@RequestBody AadhaarInitializeRequest request,@RequestHeader("apiKey") String apiKey) {
+        Map<String, Object> response = aadhaarService.initializeDigilocker(
+                request,apiKey
+        );
         return ResponseEntity.ok(response);
     }
 
@@ -38,9 +38,10 @@ public class AadharController {
      * After verification on the SDK, call this with the client_id you receive
      * to download the Aadhaar XML and metadata. No webhook needed.
      */
+
     @GetMapping("/download/{clientId}")
-    public ResponseEntity<Map<String, Object>> download(@PathVariable("clientId") @NotBlank String clientId) {
-        Map<String, Object> response = aadhaarService.downloadAadhaar(clientId);
+    public ResponseEntity<Map<String, Object>> download(@PathVariable("clientId") @NotBlank String clientId, @RequestHeader("apiKey") String apiKey) {
+        Map<String, Object> response = aadhaarService.downloadAadhaar(clientId,apiKey);
         return ResponseEntity.ok(response);
     }
 }

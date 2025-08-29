@@ -31,5 +31,7 @@ public interface TbUsageHistoryRepository extends JpaRepository<TbUsageHistory, 
             nativeQuery = true)
     List<Object[]> getClientWiseApiUsageCountById(Integer clientId);
 
+    List<TbUsageHistory> findByClientId(Integer clientId);
+
 }
 
