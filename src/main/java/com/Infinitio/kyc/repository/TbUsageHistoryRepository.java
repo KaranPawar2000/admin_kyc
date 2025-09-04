@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface TbUsageHistoryRepository extends JpaRepository<TbUsageHistory, Integer> {
@@ -45,6 +46,19 @@ public interface TbUsageHistoryRepository extends JpaRepository<TbUsageHistory, 
             "GROUP BY c.id, c.org_name, a.name",
             nativeQuery = true)
     List<Object[]> getClientWiseApiUsageCountById(Integer clientId);
+
+    @Query(value = "SELECT c.id as clientId, c.org_name as clientName, " +
+            "a.name as apiName, COUNT(u.id) as count " +
+            "FROM tb_client_master c " +
+            "CROSS JOIN tb_api_type_master a " +
+            "LEFT JOIN tb_usage_history u ON u.client_id = c.id " +
+            "AND u.api_type_id = a.id " +
+            "AND u.sent_time >= :startDate " +
+            "WHERE c.id = :clientId " +
+            "GROUP BY c.id, c.org_name, a.name",
+            nativeQuery = true)
+    List<Object[]> getClientWiseApiUsageCountByIdFromDate(@Param("clientId") Integer clientId,
+                                                          @Param("startDate") LocalDateTime startDate);
 
     List<TbUsageHistory> findByClientId(Integer clientId);
 

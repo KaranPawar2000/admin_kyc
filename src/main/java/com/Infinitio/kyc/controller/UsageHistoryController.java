@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,6 +81,24 @@ public class UsageHistoryController {
     @GetMapping("/client-wise-count/{clientId}/last-30-days")
     public ResponseEntity<Map<String, Object>> getClientWiseApiUsageCountByIdLast30Days(@PathVariable Integer clientId) {
         ClientApiUsageCount report = usageHistoryService.getClientWiseApiUsageCountByIdLast30Days(clientId);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "200");
+        response.put("message", "Success");
+        response.put("data", report);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/client-wise-count/{clientId}/from/{days}")
+    public ResponseEntity<Map<String, Object>> getClientWiseApiUsageCountByIdFromDate(
+            @PathVariable Integer clientId,
+            @PathVariable Integer days) {
+
+        // Calculate startDate dynamically
+        LocalDateTime startDate = LocalDateTime.now().minusDays(days);
+
+        ClientApiUsageCount report = usageHistoryService.getClientWiseApiUsageCountByIdFromDate(clientId, startDate);
 
         Map<String, Object> response = new HashMap<>();
         response.put("status", "200");

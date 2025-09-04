@@ -9,6 +9,7 @@ import com.Infinitio.kyc.repository.TbUsageHistoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -94,6 +95,32 @@ public class UsageHistoryService {
 
         if (results.isEmpty()) {
             throw new OurException("No usage history found in the last 30 days for clientId: " + clientId);
+        }
+
+        ClientApiUsageCount clientCount = null;
+
+        for (Object[] row : results) {
+            Integer cId = ((Number) row[0]).intValue();
+            String clientName = (String) row[1];
+            String apiName = (String) row[2];
+            Long count = ((Number) row[3]).longValue();
+
+            if (clientCount == null) {
+                clientCount = new ClientApiUsageCount(cId, clientName);
+            }
+
+            clientCount.getApiCounts().put(apiName, count);
+        }
+
+        return clientCount;
+    }
+
+    // ✅ New Method: With startDate
+    public ClientApiUsageCount getClientWiseApiUsageCountByIdFromDate(Integer clientId, LocalDateTime startDate) {
+        List<Object[]> results = usageHistoryRepository.getClientWiseApiUsageCountByIdFromDate(clientId, startDate);
+
+        if (results.isEmpty()) {
+            throw new OurException("No usage history found for clientId: " + clientId + " from date: " + startDate);
         }
 
         ClientApiUsageCount clientCount = null;
