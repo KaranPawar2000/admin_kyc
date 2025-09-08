@@ -10,10 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -152,6 +149,29 @@ public class UsageHistoryService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
     }
+
+
+    public Map<String, Object> getApiCounts() {
+        List<Object[]> results = usageHistoryRepository.getApiCounts();
+
+        // preserve insertion order
+        Map<String, Integer> apiCounts = new LinkedHashMap<>();
+        for (Object[] row : results) {
+            String apiName = (String) row[0];
+            Long count = (Long) row[1];
+            apiCounts.put(apiName, count.intValue());
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
+        data.put("apiCounts", apiCounts);
+
+        response.put("data", data);
+        response.put("message", "Success");
+        response.put("status", "200");
+        return response;
+    }
+
 
 
 

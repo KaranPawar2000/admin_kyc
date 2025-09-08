@@ -47,6 +47,8 @@ public class UsageHistoryController {
         return ResponseEntity.ok(response);
     }
 
+
+
     @GetMapping("/client/{clientId}")
     public ResponseEntity<Map<String, Object>> getUsageHistoryByClientId(@PathVariable Integer clientId) {
         List<UsageHistoryDTO> historyList = usageHistoryService.getUsageHistoryByClientId(clientId);
@@ -66,6 +68,7 @@ public class UsageHistoryController {
         return ResponseEntity.ok(usageHistoryService.getClientWiseApiUsageCount());
     }
 
+
     @GetMapping("/client-wise-count/{clientId}")
     public ResponseEntity<Map<String, Object>> getClientWiseApiUsageCountById(@PathVariable Integer clientId) {
         ClientApiUsageCount report = usageHistoryService.getClientWiseApiUsageCountById(clientId);
@@ -78,6 +81,8 @@ public class UsageHistoryController {
         return ResponseEntity.ok(response);
     }
 
+
+
     @GetMapping("/client-wise-count/{clientId}/last-30-days")
     public ResponseEntity<Map<String, Object>> getClientWiseApiUsageCountByIdLast30Days(@PathVariable Integer clientId) {
         ClientApiUsageCount report = usageHistoryService.getClientWiseApiUsageCountByIdLast30Days(clientId);
@@ -89,6 +94,7 @@ public class UsageHistoryController {
 
         return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/client-wise-count/{clientId}/from/{days}")
     public ResponseEntity<Map<String, Object>> getClientWiseApiUsageCountByIdFromDate(
@@ -107,6 +113,13 @@ public class UsageHistoryController {
 
         return ResponseEntity.ok(response);
     }
+
+
+    @GetMapping("/counts")
+    public ResponseEntity<Map<String, Object>> getApiCounts() {
+        return ResponseEntity.ok(usageHistoryService.getApiCounts());
+    }
+
 
 
 }

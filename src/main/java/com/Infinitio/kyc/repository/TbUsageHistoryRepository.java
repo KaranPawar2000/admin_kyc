@@ -60,6 +60,14 @@ public interface TbUsageHistoryRepository extends JpaRepository<TbUsageHistory, 
     List<Object[]> getClientWiseApiUsageCountByIdFromDate(@Param("clientId") Integer clientId,
                                                           @Param("startDate") LocalDateTime startDate);
 
+
+        @Query("SELECT a.name, COUNT(u.id) " +
+                "FROM TbApiTypeMaster a LEFT JOIN TbUsageHistory u " +
+                "ON u.apiType.id = a.id " +
+                "GROUP BY a.name")
+        List<Object[]> getApiCounts();
+
+
     List<TbUsageHistory> findByClientId(Integer clientId);
 
 }
