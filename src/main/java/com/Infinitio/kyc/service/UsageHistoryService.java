@@ -151,8 +151,11 @@ public class UsageHistoryService {
     }
 
 
-    public Map<String, Object> getApiCounts() {
-        List<Object[]> results = usageHistoryRepository.getApiCounts();
+    public Map<String, Object> getApiCounts(int days) {
+
+        LocalDateTime startDate = LocalDateTime.now().minusDays(days);
+
+        List<Object[]> results = usageHistoryRepository.getApiCounts(startDate);
 
         // preserve insertion order
         Map<String, Integer> apiCounts = new LinkedHashMap<>();

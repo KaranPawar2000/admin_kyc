@@ -115,9 +115,9 @@ public class UsageHistoryController {
     }
 
 
-    @GetMapping("/counts")
-    public ResponseEntity<Map<String, Object>> getApiCounts() {
-        return ResponseEntity.ok(usageHistoryService.getApiCounts());
+    @GetMapping("/counts/{days}")
+    public ResponseEntity<Map<String, Object>> getApiCounts(@PathVariable int days) {
+        return ResponseEntity.ok(usageHistoryService.getApiCounts(days));
     }
 
 
