@@ -10,6 +10,7 @@ import com.Infinitio.kyc.repository.TbUsageHistoryRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -37,11 +38,11 @@ public class AadhaarService {
 
     private final WebClient webClient;
 
-    //    @Value("${surepass.base.url}")
-    private String baseUrl="https://kyc-api.surepass.app";
+    @Value("${surepass.base.url}")
+    private String baseUrl;
 
-    //    @Value("${surepass.auth.token}")
-    private String authToken = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyNTQzNDI1NCwianRpIjoiZWU1NGE3YTktNTY0OS00MzkyLTllYTItYjhkNDNhNDY1MDA0IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmluZmluaXRpb0BzdXJlcGFzcy5pbyIsIm5iZiI6MTcyNTQzNDI1NCwiZXhwIjoyMzU2MTU0MjU0LCJlbWFpbCI6ImluZmluaXRpb0BzdXJlcGFzcy5pbyIsInRlbmFudF9pZCI6Im1haW4iLCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.qvbVu_z4jaEvbgfmhTimWwJZhQkp27oVp_a6fja8Yz0";
+    @Value("${surepass.bearer.token}")
+    private String authToken;
 
     public AadhaarService(WebClient webClient) {
         this.webClient = webClient;

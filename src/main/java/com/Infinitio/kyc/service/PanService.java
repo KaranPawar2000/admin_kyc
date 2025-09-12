@@ -35,8 +35,8 @@ public class PanService {
     @Autowired
     private TbApiTypeMasterRepository apiTypeMasterRepository;
 
-    @Value("${app.surepass.bearer.token}")
-    private String bearerToken;
+//    @Value("${app.surepass.bearer.token}")
+    private String bearerToken ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTcyNTQzNDI1NCwianRpIjoiZWU1NGE3YTktNTY0OS00MzkyLTllYTItYjhkNDNhNDY1MDA0IiwidHlwZSI6ImFjY2VzcyIsImlkZW50aXR5IjoiZGV2LmluZmluaXRpb0BzdXJlcGFzcy5pbyIsIm5iZiI6MTcyNTQzNDI1NCwiZXhwIjoyMzU2MTU0MjU0LCJlbWFpbCI6ImluZmluaXRpb0BzdXJlcGFzcy5pbyIsInRlbmFudF9pZCI6Im1haW4iLCJ1c2VyX2NsYWltcyI6eyJzY29wZXMiOlsidXNlciJdfX0.qvbVu_z4jaEvbgfmhTimWwJZhQkp27oVp_a6fja8Yz0";
 
     @Value("${app.surepass.pan.api.url}")
     private String surepassApiUrl;
@@ -115,7 +115,7 @@ public class PanService {
 
         // Save the usage history
         usageHistoryRepository.save(log);
-
+        System.out.println("log saved : ");
         return response;
     }
 

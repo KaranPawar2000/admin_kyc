@@ -1,9 +1,11 @@
 package com.Infinitio.kyc.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "tb_api_type_route_mapping")
 public class TbApiTypeRouteMapping {
