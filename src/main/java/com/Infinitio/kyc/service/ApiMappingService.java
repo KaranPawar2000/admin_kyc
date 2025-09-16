@@ -1,6 +1,8 @@
 package com.Infinitio.kyc.service;
 
 import com.Infinitio.kyc.dto.ApiTypeRouteDTO;
+import com.Infinitio.kyc.dto.ApiTypeRouteUpdateDTO;
+import com.Infinitio.kyc.entity.TbApiRouteMaster;
 import com.Infinitio.kyc.entity.TbApiTypeRouteMapping;
 import com.Infinitio.kyc.repository.TbApiTypeRouteMappingRepository;
 import org.springframework.stereotype.Service;
@@ -26,5 +28,23 @@ public class ApiMappingService {
                 m.getApiRoute() != null ? m.getApiRoute().getId() : null,
                 m.getApiRoute() != null ? m.getApiRoute().getName() : null
         )).collect(Collectors.toList());
+    }
+
+    public void updateRoutesForApiTypes(List<ApiTypeRouteUpdateDTO> updates) {
+        for (ApiTypeRouteUpdateDTO dto : updates) {
+            TbApiTypeRouteMapping mapping = mappingRepository.findByApiTypeId(dto.getApiTypeId())
+                    .orElseThrow(() -> new RuntimeException("Mapping not found for apiTypeId: " + dto.getApiTypeId()));
+
+            if (dto.getRouteId() != null) {
+                TbApiRouteMaster route = new TbApiRouteMaster();
+                route.setId(dto.getRouteId());
+                mapping.setApiRoute(route);
+            } else {
+                // Unassign route
+                mapping.setApiRoute(null);
+            }
+
+            mappingRepository.save(mapping);
+        }
     }
 }

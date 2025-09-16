@@ -1,11 +1,11 @@
 package com.Infinitio.kyc.controller;
 
 import com.Infinitio.kyc.dto.ApiTypeRouteDTO;
+import com.Infinitio.kyc.dto.ApiTypeRouteUpdateDTO;
 import com.Infinitio.kyc.service.ApiMappingService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,4 +23,12 @@ public class ApiMappingController {
     public List<ApiTypeRouteDTO> getMappings(@PathVariable Integer clientUserId) {
         return mappingService.getMappingsByClientUserId(clientUserId);
     }
+
+    @PutMapping("/update-routes")
+    public ResponseEntity<String> updateRoutes(@RequestBody List<ApiTypeRouteUpdateDTO> updates) {
+        mappingService.updateRoutesForApiTypes(updates);
+        return ResponseEntity.ok("Routes updated successfully");
+    }
+
+
 }
