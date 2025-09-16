@@ -30,5 +30,13 @@ public class ApiMappingController {
         return ResponseEntity.ok("Routes updated successfully");
     }
 
+    @PutMapping("/update-routes/{clientUserId}")
+    public ResponseEntity<String> updateRoutes(@PathVariable Integer clientUserId,
+                                               @RequestBody List<ApiTypeRouteUpdateDTO> updates) {
+        mappingService.updateRoutesForClient(clientUserId, updates);
+        return ResponseEntity.ok("Routes updated successfully for client " + clientUserId);
+    }
+
+
 
 }

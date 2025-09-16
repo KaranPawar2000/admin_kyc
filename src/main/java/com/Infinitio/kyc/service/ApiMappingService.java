@@ -47,4 +47,27 @@ public class ApiMappingService {
             mappingRepository.save(mapping);
         }
     }
+
+    public void updateRoutesForClient(Integer clientUserId, List<ApiTypeRouteUpdateDTO> updates) {
+        List<TbApiTypeRouteMapping> clientMappings = mappingRepository.findByClientUserId(clientUserId);
+
+        for (ApiTypeRouteUpdateDTO dto : updates) {
+            TbApiTypeRouteMapping mapping = clientMappings.stream()
+                    .filter(m -> m.getApiType().getId().equals(dto.getApiTypeId()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Mapping not found for apiTypeId: "
+                            + dto.getApiTypeId() + " for client: " + clientUserId));
+
+            if (dto.getRouteId() != null) {
+                TbApiRouteMaster route = new TbApiRouteMaster();
+                route.setId(dto.getRouteId());
+                mapping.setApiRoute(route);
+            } else {
+                mapping.setApiRoute(null); // unassign route
+            }
+
+            mappingRepository.save(mapping);
+        }
+    }
+
 }
