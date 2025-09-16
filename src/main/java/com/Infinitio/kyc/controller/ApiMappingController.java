@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/mappings")
 public class ApiMappingController {
 
     private final ApiMappingService mappingService;
@@ -33,6 +34,7 @@ public class ApiMappingController {
     @PutMapping("/update-routes/{clientUserId}")
     public ResponseEntity<String> updateRoutes(@PathVariable Integer clientUserId,
                                                @RequestBody List<ApiTypeRouteUpdateDTO> updates) {
+        System.out.println("Updating routes for clientUserId: " + clientUserId);
         mappingService.updateRoutesForClient(clientUserId, updates);
         return ResponseEntity.ok("Routes updated successfully for client " + clientUserId);
     }

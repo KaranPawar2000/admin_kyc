@@ -76,7 +76,7 @@ public class ApiMappingService {
             } else {
                 mapping.setApiRoute(null); // unassign route
             }
-
+                mapping.setCreatedModifiedDate(java.time.LocalDateTime.now());
             mappingRepository.save(mapping);
         }
     }
