@@ -3,6 +3,7 @@ package com.Infinitio.kyc.service;
 import com.Infinitio.kyc.dto.ApiTypeRouteDTO;
 import com.Infinitio.kyc.dto.ApiTypeRouteUpdateDTO;
 import com.Infinitio.kyc.entity.TbApiRouteMaster;
+import com.Infinitio.kyc.entity.TbApiTypeMaster;
 import com.Infinitio.kyc.entity.TbApiTypeRouteMapping;
 import com.Infinitio.kyc.repository.TbApiTypeRouteMappingRepository;
 import org.springframework.stereotype.Service;
@@ -55,8 +56,18 @@ public class ApiMappingService {
             TbApiTypeRouteMapping mapping = clientMappings.stream()
                     .filter(m -> m.getApiType().getId().equals(dto.getApiTypeId()))
                     .findFirst()
-                    .orElseThrow(() -> new RuntimeException("Mapping not found for apiTypeId: "
-                            + dto.getApiTypeId() + " for client: " + clientUserId));
+                    .orElseGet(() -> {
+                        // Create new mapping if not found
+                        TbApiTypeRouteMapping newMapping = new TbApiTypeRouteMapping();
+                        newMapping.setClientUserId(clientUserId);
+
+                        // set ApiType
+                        TbApiTypeMaster apiType = new TbApiTypeMaster();
+                        apiType.setId(dto.getApiTypeId());
+                        newMapping.setApiType(apiType);
+
+                        return newMapping;
+                    });
 
             if (dto.getRouteId() != null) {
                 TbApiRouteMaster route = new TbApiRouteMaster();
@@ -69,5 +80,28 @@ public class ApiMappingService {
             mappingRepository.save(mapping);
         }
     }
+
+
+//    public void updateRoutesForClient(Integer clientUserId, List<ApiTypeRouteUpdateDTO> updates) {
+//        List<TbApiTypeRouteMapping> clientMappings = mappingRepository.findByClientUserId(clientUserId);
+//
+//        for (ApiTypeRouteUpdateDTO dto : updates) {
+//            TbApiTypeRouteMapping mapping = clientMappings.stream()
+//                    .filter(m -> m.getApiType().getId().equals(dto.getApiTypeId()))
+//                    .findFirst()
+//                    .orElseThrow(() -> new RuntimeException("Mapping not found for apiTypeId: "
+//                            + dto.getApiTypeId() + " for client: " + clientUserId));
+//
+//            if (dto.getRouteId() != null) {
+//                TbApiRouteMaster route = new TbApiRouteMaster();
+//                route.setId(dto.getRouteId());
+//                mapping.setApiRoute(route);
+//            } else {
+//                mapping.setApiRoute(null); // unassign route
+//            }
+//
+//            mappingRepository.save(mapping);
+//        }
+//    }
 
 }

@@ -125,3 +125,80 @@
 2025-09-16T10:51:55.594+05:30  INFO 42816 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2025-09-16T10:51:55.623+05:30  INFO 42816 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2025-09-16T10:51:55.667+05:30  INFO 42816 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-09-16T11:08:08.280+05:30  INFO 34712 --- [main] com.Infinitio.kyc.KycApplication         : Starting KycApplication using Java 21.0.2 with PID 34712 (C:\Users\karan\Desktop\INFINITIO DIGITAL PRIVATE LIMITED\ADMIN_KYC_NEW\admin_kyc_module\target\classes started by karan in C:\Users\karan\Desktop\INFINITIO DIGITAL PRIVATE LIMITED\ADMIN_KYC_NEW\admin_kyc_module)
+2025-09-16T11:08:08.285+05:30 DEBUG 34712 --- [main] com.Infinitio.kyc.KycApplication         : Running with Spring Boot v3.5.3, Spring v6.2.8
+2025-09-16T11:08:08.286+05:30  INFO 34712 --- [main] com.Infinitio.kyc.KycApplication         : No active profile set, falling back to 1 default profile: "default"
+2025-09-16T11:08:09.758+05:30  INFO 34712 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-16T11:08:09.986+05:30  INFO 34712 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 213 ms. Found 9 JPA repository interfaces.
+2025-09-16T11:08:10.870+05:30  INFO 34712 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 4040 (http)
+2025-09-16T11:08:10.885+05:30  INFO 34712 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-16T11:08:10.885+05:30  INFO 34712 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-09-16T11:08:10.943+05:30  INFO 34712 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-16T11:08:10.943+05:30  INFO 34712 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2563 ms
+2025-09-16T11:08:11.286+05:30  INFO 34712 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-09-16T11:08:11.422+05:30  INFO 34712 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.18.Final
+2025-09-16T11:08:11.476+05:30  INFO 34712 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-09-16T11:08:11.892+05:30  INFO 34712 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-09-16T11:08:11.935+05:30  INFO 34712 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-09-16T11:08:12.540+05:30  INFO 34712 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@25216999
+2025-09-16T11:08:12.543+05:30  INFO 34712 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-09-16T11:08:12.676+05:30  WARN 34712 --- [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-09-16T11:08:12.706+05:30  INFO 34712 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.33
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-09-16T11:08:13.856+05:30  INFO 34712 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-09-16T11:08:14.090+05:30  INFO 34712 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-09-16T11:08:15.116+05:30  INFO 34712 --- [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-09-16T11:08:17.171+05:30  WARN 34712 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-09-16T11:08:17.954+05:30  INFO 34712 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 4040 (http) with context path '/'
+2025-09-16T11:08:17.970+05:30  INFO 34712 --- [main] com.Infinitio.kyc.KycApplication         : Started KycApplication in 10.538 seconds (process running for 11.309)
+2025-09-16T12:23:51.148+05:30  INFO 34712 --- [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-09-16T12:23:51.206+05:30  INFO 34712 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-09-16T12:23:51.372+05:30  INFO 34712 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-09-16T12:23:51.401+05:30  INFO 34712 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-09-16T12:23:51.420+05:30  INFO 34712 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-09-16T12:23:58.333+05:30  INFO 46520 --- [main] com.Infinitio.kyc.KycApplication         : Starting KycApplication using Java 21.0.2 with PID 46520 (C:\Users\karan\Desktop\INFINITIO DIGITAL PRIVATE LIMITED\ADMIN_KYC_NEW\admin_kyc_module\target\classes started by karan in C:\Users\karan\Desktop\INFINITIO DIGITAL PRIVATE LIMITED\ADMIN_KYC_NEW\admin_kyc_module)
+2025-09-16T12:23:58.335+05:30 DEBUG 46520 --- [main] com.Infinitio.kyc.KycApplication         : Running with Spring Boot v3.5.3, Spring v6.2.8
+2025-09-16T12:23:58.337+05:30  INFO 46520 --- [main] com.Infinitio.kyc.KycApplication         : No active profile set, falling back to 1 default profile: "default"
+2025-09-16T12:23:59.587+05:30  INFO 46520 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-09-16T12:23:59.782+05:30  INFO 46520 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 179 ms. Found 9 JPA repository interfaces.
+2025-09-16T12:24:00.726+05:30  INFO 46520 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 4040 (http)
+2025-09-16T12:24:00.742+05:30  INFO 46520 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-09-16T12:24:00.743+05:30  INFO 46520 --- [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.42]
+2025-09-16T12:24:00.807+05:30  INFO 46520 --- [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-09-16T12:24:00.808+05:30  INFO 46520 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2384 ms
+2025-09-16T12:24:01.137+05:30  INFO 46520 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-09-16T12:24:01.246+05:30  INFO 46520 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.18.Final
+2025-09-16T12:24:01.296+05:30  INFO 46520 --- [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-09-16T12:24:01.798+05:30  INFO 46520 --- [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-09-16T12:24:01.859+05:30  INFO 46520 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-09-16T12:24:02.543+05:30  INFO 46520 --- [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@5c997de8
+2025-09-16T12:24:02.547+05:30  INFO 46520 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-09-16T12:24:02.703+05:30  WARN 46520 --- [main] org.hibernate.orm.deprecation            : HHH90000025: MySQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2025-09-16T12:24:02.757+05:30  INFO 46520 --- [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.33
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-09-16T12:24:04.424+05:30  INFO 46520 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-09-16T12:24:04.725+05:30  INFO 46520 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-09-16T12:24:05.691+05:30  INFO 46520 --- [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-09-16T12:24:07.267+05:30  WARN 46520 --- [main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2025-09-16T12:24:08.278+05:30  INFO 46520 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 4040 (http) with context path '/'
+2025-09-16T12:24:08.299+05:30  INFO 46520 --- [main] com.Infinitio.kyc.KycApplication         : Started KycApplication in 10.689 seconds (process running for 11.256)
+2025-09-16T12:24:29.670+05:30  INFO 46520 --- [http-nio-4040-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-09-16T12:24:29.671+05:30  INFO 46520 --- [http-nio-4040-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-09-16T12:24:29.674+05:30  INFO 46520 --- [http-nio-4040-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+2025-09-16T12:29:54.125+05:30  INFO 46520 --- [SpringApplicationShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-09-16T12:29:54.171+05:30  INFO 46520 --- [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-09-16T12:29:54.414+05:30  INFO 46520 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-09-16T12:29:54.449+05:30  INFO 46520 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-09-16T12:29:54.489+05:30  INFO 46520 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
