@@ -20,7 +20,8 @@ public class CorsConfig {
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
                         .allowedOrigins(
                                 "http://localhost:3000",
-                                "http://192.168.56.1:3000"
+                                "http://192.168.56.1:3000",
+                                "https://admin-kyc-frontend.vercel.app"
                         )
                         .allowedHeaders("*")
                         .allowCredentials(true);
