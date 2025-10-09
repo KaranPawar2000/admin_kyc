@@ -119,8 +119,8 @@ public class PassportService {
                 log.setCreatedModifiedDate(LocalDateTime.now());
 
                 // CHANGE THE ID (8) IF YOUR DB USES DIFFERENT API TYPE ID FOR PASSPORT
-                TbApiTypeMaster apiType = apiTypeRepo.findById(8)
-                        .orElseThrow(() -> new RuntimeException("API Type with ID 8 not found"));
+                TbApiTypeMaster apiType = apiTypeRepo.findById(6)
+                        .orElseThrow(() -> new RuntimeException("API Type with ID 6 not found"));
                 log.setApiType(apiType);
 
                 usageRepo.save(log);

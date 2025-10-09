@@ -1,15 +1,11 @@
 package com.Infinitio.kyc.dto;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class DrivingLicenseRequest {
+public class CorporateCinRequest {
 
-    @JsonProperty("id_number")
+    @JsonProperty("CIN_NO")
     private String idNumber;
-
-    @JsonProperty("dob")
-    private String dob;
 }

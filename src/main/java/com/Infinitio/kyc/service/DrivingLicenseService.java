@@ -14,16 +14,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 @Service
 public class DrivingLicenseService {
 
     private final WebClient webClient;
-    private final TbClientMasterRepository clientMasterRepository;
-    private final TbUsageHistoryRepository usageHistoryRepository;
-    private final TbApiTypeMasterRepository apiTypeMasterRepository;
+    private final TbClientMasterRepository clientRepo;
+    private final TbUsageHistoryRepository usageRepo;
+    private final TbApiTypeMasterRepository apiTypeRepo;
 
     @Value("${surepass.base.url}")
     private String baseUrl;
@@ -32,108 +35,35 @@ public class DrivingLicenseService {
     private String authToken;
 
     public DrivingLicenseService(WebClient webClient,
-                                 TbClientMasterRepository clientMasterRepository,
-                                 TbUsageHistoryRepository usageHistoryRepository,
-                                 TbApiTypeMasterRepository apiTypeMasterRepository) {
+                                 TbClientMasterRepository clientRepo,
+                                 TbUsageHistoryRepository usageRepo,
+                                 TbApiTypeMasterRepository apiTypeRepo) {
         this.webClient = webClient;
-        this.clientMasterRepository = clientMasterRepository;
-        this.usageHistoryRepository = usageHistoryRepository;
-        this.apiTypeMasterRepository = apiTypeMasterRepository;
+        this.clientRepo = clientRepo;
+        this.usageRepo = usageRepo;
+        this.apiTypeRepo = apiTypeRepo;
     }
-
-//    public Map<String, Object> verifyDrivingLicense(DrivingLicenseRequest request, String apiKey) {
-//        ObjectMapper mapper = new ObjectMapper();
-//
-//        TbClientMaster client = clientMasterRepository.findByApiKey(apiKey);
-//        if (client == null) {
-//            throw new RuntimeException("Client not found for apiKey: " + apiKey);
-//        }
-//
-//        String url = baseUrl + "/api/v1/driving-license/driving-license";
-//
-//        System.out.println("DL Request - NUMBER: " + String.valueOf(request.getNumber()) +
-//                ", DOB: " + String.valueOf(request.getDob()));
-//        System.out.println("Received API Key for DL: " + apiKey);
-//
-//        Map<String, Object> payload = new HashMap<>();
-//        payload.put("id_number", request.getNumber());
-//        payload.put("dob", formatDateToIso(request.getDob()));
-////        payload.put("dob", request.getDob());
-//        System.out.println("Payload for Surepass DL: " + payload);
-//
-//        Map<String, Object> vendorResponse;
-//        try {
-//            vendorResponse = webClient.post()
-//                    .uri(url)
-//                    .header("Authorization", authToken)
-//                    .header("Content-Type", "application/json")
-//                    .bodyValue(payload)
-//                    .retrieve()
-//                    .bodyToMono(Map.class)
-//                    .block();
-//            System.out.println("Vendor Response 1: " + vendorResponse);
-//        } catch (WebClientResponseException e) {
-//            vendorResponse = new HashMap<>();
-//            vendorResponse.put("status_code", e.getStatusCode().value());
-//            vendorResponse.put("error", e.getResponseBodyAsString());
-//            System.out.println("Vendor Response 1: " + vendorResponse);
-//        }
-//
-//        // Save usage history
-//        try {
-//            TbUsageHistory log = new TbUsageHistory();
-//            log.setApiRequestBody(mapper.writeValueAsString(request));
-//            log.setVendorRequestBody(mapper.writeValueAsString(payload));
-//            log.setApiResponseBody(mapper.writeValueAsString(vendorResponse));
-//            log.setStatus(vendorResponse.containsKey("status_code") &&
-//                    (int) vendorResponse.get("status_code") == 200 ? 1 : 0);
-//            log.setMessage(String.valueOf(vendorResponse.get("message")));
-//            log.setMessageCode(vendorResponse.containsKey("message_code")
-//                    ? vendorResponse.get("message_code").toString() : null);
-//            log.setReadOnly("N");
-//            log.setArchiveFlag("F");
-//            log.setClient(client);
-//            log.setSentTime(LocalDateTime.now());
-//            log.setCreatedModifiedDate(LocalDateTime.now());
-//
-//            TbApiTypeMaster apiType = apiTypeMasterRepository.findById(6)
-//                    .orElseThrow(() -> new RuntimeException("API Type with ID 6 not found"));
-//            log.setApiType(apiType);
-//
-//            usageHistoryRepository.save(log);
-//        } catch (JsonProcessingException e) {
-//            throw new RuntimeException("Error serializing usage log", e);
-//        }
-//
-//        // Transform response
-//        Map<String, Object> finalResponse = new HashMap<>();
-//        finalResponse.put("code", vendorResponse.get("status_code"));
-//        finalResponse.put("data", Map.of("result", mapDrivingLicenseData(vendorResponse)));
-//
-//        return finalResponse;
-//    }
-
 
     public Map<String, Object> verifyDrivingLicense(DrivingLicenseRequest request, String apiKey) {
         ObjectMapper mapper = new ObjectMapper();
 
-        // 1️⃣ Fetch client
-        TbClientMaster client = clientMasterRepository.findByApiKey(apiKey);
-        if (client == null) {
-            throw new RuntimeException("Client not found for apiKey: " + apiKey);
-        }
+        TbClientMaster client = clientRepo.findByApiKey(apiKey);
+        if (client == null) throw new RuntimeException("Client not found for apiKey: " + apiKey);
 
         String url = baseUrl + "/api/v1/driving-license/driving-license";
 
-        // 2️⃣ Prepare payload
         Map<String, Object> payload = new HashMap<>();
-        payload.put("id_number", request.getNumber());
-        payload.put("dob", formatDateToIso(request.getDob())); // yyyy-MM-dd
+        payload.put("id_number", request.getIdNumber());
+        payload.put("dob", request.getDob());
 
-        // 3️⃣ Call vendor API
-        Map<String, Object> vendorResponse;
+        Map<String, Object> apiResponse = new HashMap<>();
+        Map<String, Object> formattedResponse = new HashMap<>();
+
+        int status = 1;
+        String message = "Success";
+
         try {
-            vendorResponse = webClient.post()
+            apiResponse = webClient.post()
                     .uri(url)
                     .header("Authorization", authToken)
                     .header("Content-Type", "application/json")
@@ -141,310 +71,163 @@ public class DrivingLicenseService {
                     .retrieve()
                     .bodyToMono(Map.class)
                     .block();
+
+            formattedResponse = formatResponse(apiResponse);
+
         } catch (WebClientResponseException e) {
-            vendorResponse = new HashMap<>();
-            vendorResponse.put("status_code", e.getStatusCode().value());
-            vendorResponse.put("error", e.getResponseBodyAsString());
-        }
+            status = 0;
+            message = "Surepass API Error: " + e.getStatusCode().value();
 
-        // 4️⃣ Extract vendor data
-        Map<String, Object> vendorData = new HashMap<>();
-        if (vendorResponse != null && vendorResponse.containsKey("data")) {
-            Map<String, Object> dataMap = (Map<String, Object>) vendorResponse.get("data");
-            if (dataMap != null && dataMap.containsKey("result")) {
-                vendorData = (Map<String, Object>) dataMap.get("result");
-            }
-        }
+            apiResponse.put("status", e.getStatusCode().value());
+            apiResponse.put("error", e.getResponseBodyAsString());
 
-        // 5️⃣ Build final mapped response
-        Map<String, Object> result = new LinkedHashMap<>();
-        result.put("dlNumber", vendorData.getOrDefault("dlNumber", ""));
-        result.put("dob", formatDateToDdMmYyyy(vendorData.get("dob")));
+            Map<String, Object> errResult = Map.of("error", e.getResponseBodyAsString());
+            formattedResponse = Map.of(
+                    "code", e.getStatusCode().value(),
+                    "message", message,
+                    "data", Map.of("result", errResult)
+            );
 
-        // Badge details
-        Map<String, Object> badgeDetail = new LinkedHashMap<>();
-        badgeDetail.put("badgeIssueDate", "");
-        badgeDetail.put("badgeNo", "");
-        badgeDetail.put("classOfVehicle", vendorData.getOrDefault("classOfVehicle", List.of()));
-        result.put("badgeDetails", List.of(badgeDetail));
-
-        // DL validity
-        Map<String, Object> dlValidity = new LinkedHashMap<>();
-        Map<String, Object> nonTransport = new LinkedHashMap<>();
-        nonTransport.put("from", formatDateToDdMmYyyy(vendorData.get("doi")));
-        nonTransport.put("to", formatDateToDdMmYyyy(vendorData.get("doe")));
-        Map<String, Object> transport = new LinkedHashMap<>();
-        transport.put("from", formatDateToDdMmYyyy(vendorData.get("transport_doi")));
-        transport.put("to", formatDateToDdMmYyyy(vendorData.get("transport_doe")));
-        dlValidity.put("nonTransport", nonTransport);
-        dlValidity.put("transport", transport);
-        dlValidity.put("hazardousValidTill", "");
-        dlValidity.put("hillValidTill", "");
-        result.put("dlValidity", dlValidity);
-
-        // Driving Licence details
-        Map<String, Object> details = new LinkedHashMap<>();
-        details.put("dateOfIssue", formatDateToDdMmYyyy(vendorData.get("doi")));
-        details.put("dateOfLastTransaction", "");
-        details.put("status", vendorData.getOrDefault("status", "ACTIVE"));
-        details.put("lastTransactedAt", "");
-        details.put("name", vendorData.getOrDefault("name", ""));
-        details.put("fatherOrHusbandName", vendorData.getOrDefault("fatherOrHusbandName", ""));
-        details.put("photo", vendorData.getOrDefault("photo", ""));
-        details.put("covDetails", List.of());
-
-        // Addresses
-        String permanentAddr = (String) vendorData.getOrDefault("permanentAddress", "");
-        String tempAddr = (String) vendorData.getOrDefault("temporaryAddress", permanentAddr);
-        String state = (String) vendorData.getOrDefault("state", "");
-        String permanentPincode = (String) vendorData.getOrDefault("permanentPincode", "");
-        String tempPincode = (String) vendorData.getOrDefault("temporaryPincode", permanentPincode);
-
-        Map<String, Object> permanentAddress = buildDynamicAddress(permanentAddr, permanentPincode, state, "permanent");
-        Map<String, Object> temporaryAddress = buildDynamicAddress(tempAddr, tempPincode, state, "temporary");
-
-        details.put("addressList", List.of(permanentAddress, temporaryAddress));
-        details.put("address", permanentAddr);
-        details.put("splitAddress", permanentAddress.get("splitAddress"));
-
-        result.put("detailsOfDrivingLicence", details);
-
-        // 6️⃣ Wrap final response
-        Map<String, Object> finalResponse = new LinkedHashMap<>();
-        finalResponse.put("code", 200);
-        finalResponse.put("data", Map.of("result", result));
-
-        return finalResponse;
-    }
-
-
-
-    /**
-     * Maps the Surepass vendor response into the required nested structure.
-     */
-//    private Map<String, Object> mapDrivingLicenseData(Map<String, Object> data) {
-//        Map<String, Object> result = new LinkedHashMap<>();
-//
-//        // 1️⃣ Basic info
-//        result.put("dlNumber", data.get("dl_number"));
-//        result.put("dob", formatDateToDdMmYyyy(data.get("dob")));
-//
-//        // 2️⃣ Badge details
-//        Map<String, Object> badgeDetail = new LinkedHashMap<>();
-//        badgeDetail.put("badgeIssueDate", formatDateToDdMmYyyy(data.get("badge_issue_date")));
-//        badgeDetail.put("badgeNo", data.get("badge_no"));
-//        badgeDetail.put("classOfVehicle", data.getOrDefault("class_of_vehicle", List.of()));
-//        result.put("badgeDetails", List.of(badgeDetail));
-//
-//        // 3️⃣ DL validity
-//        Map<String, Object> dlValidity = new LinkedHashMap<>();
-//
-//        Map<String, Object> nonTransport = new LinkedHashMap<>();
-//        nonTransport.put("from", formatDateToDdMmYyyy(data.get("doi")));
-//        nonTransport.put("to", formatDateToDdMmYyyy(data.get("doe")));
-//
-//        Map<String, Object> transport = new LinkedHashMap<>();
-//        transport.put("from", formatDateToDdMmYyyy(data.get("transport_doi")));
-//        transport.put("to", formatDateToDdMmYyyy(data.get("transport_doe")));
-//
-//        dlValidity.put("nonTransport", nonTransport);
-//        dlValidity.put("transport", transport);
-//        dlValidity.put("hazardousValidTill", "");
-//        dlValidity.put("hillValidTill", "");
-//        result.put("dlValidity", dlValidity);
-//
-//        // 4️⃣ Details of Driving Licence
-//        Map<String, Object> details = new LinkedHashMap<>();
-//        details.put("dateOfIssue", formatDateToDdMmYyyy(data.get("doi")));
-//        details.put("status", data.getOrDefault("current_status", "ACTIVE"));
-//        details.put("name", data.get("name"));
-//        details.put("fatherOrHusbandName", data.get("father_name"));
-//
-//        // 5️⃣ Address list (permanent + temporary)
-//        Map<String, Object> permanentAddress = buildDynamicAddress(
-//                (String) data.get("permanent_address"),
-//                (String) data.get("permanent_zip"),
-//                (String) data.get("state"),
-//                "permanent"
-//        );
-//
-//        Map<String, Object> temporaryAddress = buildDynamicAddress(
-//                (String) data.getOrDefault("temporary_address", data.get("permanent_address")),
-//                (String) data.get("permanent_zip"),
-//                (String) data.get("state"),
-//                "temporary"
-//        );
-//
-//        details.put("addressList", List.of(permanentAddress, temporaryAddress));
-//        result.put("detailsOfDrivingLicence", details);
-//
-//        // ✅ Final wrapped response
-//        Map<String, Object> finalResponse = new LinkedHashMap<>();
-//        finalResponse.put("code", 200);
-//        finalResponse.put("data", Map.of("result", result));
-//
-//        return finalResponse;
-//    }
-
-
-    private Map<String, Object> mapDrivingLicenseData(Map<String, Object> vendorResponse) {
-        Map<String, Object> vendorData = (Map<String, Object>) vendorResponse.get("data");
-        if (vendorData == null) vendorData = new HashMap<>();
-
-        Map<String, Object> result = new LinkedHashMap<>();
-
-        // 1️⃣ Basic info
-        result.put("dlNumber", vendorData.get("license_number"));
-        result.put("dob", formatDateToDdMmYyyy(vendorData.get("dob")));
-
-        // 2️⃣ Badge details
-        Map<String, Object> badgeDetail = new LinkedHashMap<>();
-        badgeDetail.put("badgeIssueDate", ""); // Not provided in vendor response
-        badgeDetail.put("badgeNo", ""); // Not provided in vendor response
-        badgeDetail.put("classOfVehicle", vendorData.getOrDefault("vehicle_classes", List.of()));
-        result.put("badgeDetails", List.of(badgeDetail));
-
-        // 3️⃣ DL validity
-        Map<String, Object> dlValidity = new LinkedHashMap<>();
-
-        Map<String, Object> nonTransport = new LinkedHashMap<>();
-        nonTransport.put("from", formatDateToDdMmYyyy(vendorData.get("doi")));
-        nonTransport.put("to", formatDateToDdMmYyyy(vendorData.get("doe")));
-
-        Map<String, Object> transport = new LinkedHashMap<>();
-        transport.put("from", formatDateToDdMmYyyy(vendorData.get("transport_doi")));
-        transport.put("to", formatDateToDdMmYyyy(vendorData.get("transport_doe")));
-
-        dlValidity.put("nonTransport", nonTransport);
-        dlValidity.put("transport", transport);
-        dlValidity.put("hazardousValidTill", "");
-        dlValidity.put("hillValidTill", "");
-        result.put("dlValidity", dlValidity);
-
-        // 4️⃣ Details of Driving Licence
-        Map<String, Object> details = new LinkedHashMap<>();
-        details.put("dateOfIssue", formatDateToDdMmYyyy(vendorData.get("doi")));
-        details.put("status", vendorData.getOrDefault("current_status", "ACTIVE"));
-        details.put("name", vendorData.get("name"));
-        details.put("fatherOrHusbandName", vendorData.get("father_or_husband_name"));
-
-        // 5️⃣ Address list
-        Map<String, Object> permanentAddress = buildDynamicAddress(
-                (String) vendorData.get("permanent_address"),
-                (String) vendorData.get("permanent_zip"),
-                (String) vendorData.get("state"),
-                "permanent"
-        );
-
-        Map<String, Object> temporaryAddress = buildDynamicAddress(
-                (String) vendorData.getOrDefault("temporary_address", vendorData.get("permanent_address")),
-                (String) vendorData.getOrDefault("temporary_zip", vendorData.get("permanent_zip")),
-                (String) vendorData.get("state"),
-                "temporary"
-        );
-
-        details.put("addressList", List.of(permanentAddress, temporaryAddress));
-        result.put("detailsOfDrivingLicence", details);
-
-        // ✅ Wrap final response
-        Map<String, Object> finalResponse = new LinkedHashMap<>();
-        finalResponse.put("code", 200);
-        finalResponse.put("data", Map.of("result", result));
-
-        return finalResponse;
-    }
-
-    private Map<String, Object> buildDynamicAddress(String fullAddress, String pincode, String state, String type) {
-        Map<String, Object> addressMap = new LinkedHashMap<>();
-
-        // Default empty fields
-        String city = "";
-        String district = "";
-        String village = "";
-        String tehsil = "";
-        String block = "";
-        String subDistrict = "";
-
-        // Split the address by comma or other delimiters
-        if (fullAddress != null && !fullAddress.isEmpty()) {
-            String[] parts = fullAddress.split(",");
-            List<String> splitList = new ArrayList<>();
-            for (String part : parts) {
-                String trimmed = part.trim();
-                if (!trimmed.isEmpty()) {
-                    splitList.add(trimmed);
-                }
-            }
-
-            // Heuristic mapping (adjust based on your data)
-            if (splitList.size() > 0) village = splitList.get(0);
-            if (splitList.size() > 1) tehsil = splitList.get(1);
-            if (splitList.size() > 2) district = splitList.get(2);
-            if (splitList.size() > 3) city = splitList.get(3);
-            if (splitList.size() > 4) block = splitList.get(4);
-            if (splitList.size() > 5) subDistrict = splitList.get(5);
-
-            addressMap.put("splitAddress", splitList);
-        } else {
-            addressMap.put("splitAddress", List.of());
-        }
-
-        // Populate the address map
-        addressMap.put("addressType", type);
-        addressMap.put("fullAddress", fullAddress != null ? fullAddress : "");
-        addressMap.put("village", village);
-        addressMap.put("tehsil", tehsil);
-        addressMap.put("district", district);
-        addressMap.put("city", city);
-        addressMap.put("block", block);
-        addressMap.put("subDistrict", subDistrict);
-        addressMap.put("state", state != null ? state : "");
-        addressMap.put("pincode", pincode != null ? pincode : "");
-
-        return addressMap;
-    }
-
-
-    // Example: returns state code dynamically
-    private String stateCode(String state) {
-        if (state == null) return "";
-        switch (state.toUpperCase()) {
-            case "MAHARASHTRA": return "MH";
-            case "DELHI": return "DL";
-            case "GUJARAT": return "GJ";
-            // Add all states as needed
-            default: return "";
-        }
-    }
-
-    // Format date yyyy-MM-dd → dd/MM/yyyy
-    private String formatDateToDdMmYyyy(Object dateObj) {
-        if (dateObj == null || dateObj.toString().isEmpty()) return "";
-        String date = dateObj.toString();
-        try {
-            String[] parts = date.split("-");
-            return parts[2] + "/" + parts[1] + "/" + parts[0];
         } catch (Exception e) {
-            return date;
+            status = 0;
+            message = "Internal Server Error: " + e.getMessage();
+
+            apiResponse.put("status", 500);
+            apiResponse.put("error", e.getMessage());
+
+            Map<String, Object> errResult = Map.of("error", e.getMessage());
+            formattedResponse = Map.of(
+                    "code", 500,
+                    "message", message,
+                    "data", Map.of("result", errResult)
+            );
+        } finally {
+            try {
+                TbUsageHistory log = new TbUsageHistory();
+                log.setApiRequestBody(mapper.writeValueAsString(request));
+                log.setVendorRequestBody(mapper.writeValueAsString(payload));
+                log.setApiResponseBody(mapper.writeValueAsString(apiResponse));
+                log.setData(mapper.writeValueAsString(formattedResponse.get("data")));
+                log.setStatus(status);
+                log.setMessage(message);
+                log.setReadOnly("N");
+                log.setArchiveFlag("F");
+                log.setClient(client);
+                log.setSentTime(LocalDateTime.now());
+                log.setCreatedModifiedDate(LocalDateTime.now());
+
+                TbApiTypeMaster apiType = apiTypeRepo.findById(8) // Change ID if needed
+                        .orElseThrow(() -> new RuntimeException("API Type with ID 8 not found"));
+                log.setApiType(apiType);
+
+                usageRepo.save(log);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Error serializing usage log", e);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
+
+        return formattedResponse;
     }
 
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> formatResponse(Map<String, Object> apiResponse) {
+        Map<String, Object> data = (Map<String, Object>) apiResponse.get("data");
+        if (data == null) data = new HashMap<>();
 
-    // Format date to ISO yyyy-MM-dd (for vendor API)
-    private String formatDateToIso(Object dateObj) {
-        if (dateObj == null || dateObj.toString().isEmpty()) return "";
-        String date = dateObj.toString();
+        DateTimeFormatter inFmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter outFmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-        // If date is already in dd/MM/yyyy, convert to yyyy-MM-dd
-        if (date.contains("/")) {
-            String[] parts = date.split("/");
-            return parts[2] + "-" + parts[1] + "-" + parts[0];
-        }
+        // Format DOB
+        String dob = formatDateString((String) data.get("dob"), outFmt);
+        String doe = formatDateString((String) data.get("doe"), outFmt);
+        String doi = formatDateString((String) data.get("doi"), outFmt);
 
-        // If date is already in yyyy-MM-dd
-        return date;
+        // Format name
+        String fullName = Optional.ofNullable(data.get("name")).orElse("").toString();
+        String fatherOrHusband = Optional.ofNullable(data.get("father_or_husband_name")).orElse("").toString();
+
+        // Vehicle classes
+        List<String> vehicleClasses = (List<String>) data.getOrDefault("vehicle_classes", new ArrayList<>());
+
+        // Address formatting
+        String address = Optional.ofNullable(data.get("permanent_address")).orElse("").toString();
+        String state = Optional.ofNullable(data.get("state")).orElse("").toString();
+        String zip = Optional.ofNullable(data.get("permanent_zip")).orElse("").toString();
+        String city = Optional.ofNullable(data.get("city_name")).orElse("").toString();
+
+        Map<String, Object> splitAddress = Map.of(
+                "district", List.of(zip.isEmpty() ? "" : zip),
+                "state", List.of(List.of(state.toUpperCase(), state.length() >= 2 ? state.substring(0,2).toUpperCase() : "")),
+                "city", List.of(city),
+                "pincode", zip,
+                "country", List.of("IN", "IND", "INDIA"),
+                "addressLine", address.replace(",", "")
+        );
+
+        Map<String, Object> permAddress = Map.of(
+                "completeAddress", address + ", " + state + ", " + zip,
+                "type", "permanent",
+                "splitAddress", splitAddress
+        );
+
+        Map<String, Object> tempAddress = Map.of(
+                "completeAddress", address + ", " + state + ", " + zip,
+                "type", "temporary",
+                "splitAddress", splitAddress
+        );
+
+        Map<String, Object> badgeDetails = Map.of(
+                "badgeIssueDate", "",
+                "badgeNo", "",
+                "classOfVehicle", vehicleClasses
+        );
+
+        Map<String, Object> dlValidity = Map.of(
+                "nonTransport", Map.of("to", doe, "from", doi),
+                "hazardousValidTill", "",
+                "transport", Map.of("to", "", "from", ""),
+                "hillValidTill", ""
+        );
+
+        Map<String, Object> detailsOfDL = new HashMap<>();
+        detailsOfDL.put("dateOfIssue", doi);
+        detailsOfDL.put("dateOfLastTransaction", "");
+        detailsOfDL.put("status", "ACTIVE");
+        detailsOfDL.put("lastTransactedAt", "");
+        detailsOfDL.put("name", fullName);
+        detailsOfDL.put("fatherOrHusbandName", fatherOrHusband);
+        detailsOfDL.put("addressList", List.of(permAddress, tempAddress));
+        detailsOfDL.put("address", address + ", " + state + ", " + zip);
+        detailsOfDL.put("photo", Optional.ofNullable(data.get("profile_image")).orElse("").toString());
+        detailsOfDL.put("splitAddress", splitAddress);
+        detailsOfDL.put("covDetails", new ArrayList<>());
+        detailsOfDL.put("photoData", Optional.ofNullable(data.get("profile_image")).orElse("").toString());
+
+
+        Map<String, Object> result = Map.of(
+                "dlNumber", Optional.ofNullable(data.get("license_number")).orElse("").toString(),
+                "dob", dob,
+                "badgeDetails", List.of(badgeDetails),
+                "dlValidity", dlValidity,
+                "detailsOfDrivingLicence", detailsOfDL
+        );
+
+        return Map.of(
+                "code", 200,
+                "message", "Success",
+                "data", Map.of("result", result)
+        );
     }
 
-
-
+    private String formatDateString(String isoDate, DateTimeFormatter outFmt) {
+        if (isoDate == null || isoDate.isBlank()) return "";
+        try {
+            LocalDate d = LocalDate.parse(isoDate);
+            return d.format(outFmt);
+        } catch (DateTimeParseException e) {
+            return isoDate;
+        }
+    }
 }
