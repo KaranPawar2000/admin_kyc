@@ -21,6 +21,7 @@ public class CorporateGstinController {
     public ResponseEntity<Map<String, Object>> verifyCorporateGstin(
             @RequestBody CorporateGstinRequest request,
             @RequestHeader("apiKey") String apiKey) {
+        System.out.println("Received GSTIN Verification Request: " + request.getIdNumber());
 
         Map<String, Object> response = corporateGstinService.verifyCorporateGstin(request, apiKey);
         return ResponseEntity.ok(response);

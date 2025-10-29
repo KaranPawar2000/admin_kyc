@@ -51,6 +51,7 @@ public class VoterIdService {
 
         int status = 1;
         String message = "Success";
+        String message_code = "sucess";
 
         try {
             apiResponse = webClient.post()
@@ -67,7 +68,7 @@ public class VoterIdService {
         } catch (WebClientResponseException e) {
             status = 0;
             message = "Surepass API Error: " + e.getStatusCode().value();
-
+            message_code = "fail";
             apiResponse.put("status", e.getStatusCode().value());
             apiResponse.put("error", e.getResponseBodyAsString());
 
@@ -80,7 +81,7 @@ public class VoterIdService {
         } catch (Exception e) {
             status = 0;
             message = "Internal Server Error: " + e.getMessage();
-
+            message_code = "fail";
             apiResponse.put("status", 500);
             apiResponse.put("error", e.getMessage());
 
@@ -100,6 +101,7 @@ public class VoterIdService {
                 log.setData(mapper.writeValueAsString(formattedResponse.get("data")));
                 log.setStatus(status);
                 log.setMessage(message);
+                log.setMessageCode(message_code);
                 log.setReadOnly("N");
                 log.setArchiveFlag("F");
                 log.setClient(client);

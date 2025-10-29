@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 public class CorporateGstinRequest {
 
-    @JsonProperty("id_number")
+    @JsonProperty("GST_NO")
     private String idNumber;  // corresponds to "id_number"
 }

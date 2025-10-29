@@ -9,6 +9,7 @@ public class KycApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(KycApplication.class, args);
 
+
 	}
 
 }

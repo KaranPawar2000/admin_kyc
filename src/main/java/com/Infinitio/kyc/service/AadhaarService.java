@@ -135,12 +135,16 @@ public class AadhaarService {
 
         try {
             TbUsageHistory log = new TbUsageHistory();
-            log.setApiRequestBody(mapper.writeValueAsString(request)); // request sent
+// ✅ Save formatted JSON for better readability in DB
+            log.setApiRequestBody(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(request));
+            log.setVendorRequestBody(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(payload));
+
             log.setApiResponseBody(mapper.writeValueAsString(responseMap)); // raw response
             log.setVendorRequestBody(mapper.writeValueAsString(payload)); // payload to vendor
             log.setData(mapper.writeValueAsString(responseMap.get("data"))); // formatted data (if applicable)
 
-            log.setStatus(responseMap.containsKey("status") && (int) responseMap.get("status") == 200 ? 1 : 0);
+            System.out.println("Status Code:-"+ responseMap.get("status_code"));
+            log.setStatus(responseMap.containsKey("status_code") && (int) responseMap.get("status_code") == 200 ? 1 : 0);
             log.setMessage(responseMap.containsKey("message") ? responseMap.get("message").toString() : "No message");
             log.setMessageCode(responseMap.containsKey("message_code") ? responseMap.get("message_code").toString() : null);
             log.setReadOnly("N");
@@ -198,12 +202,18 @@ public class AadhaarService {
         // === Save Usage History ===
         try {
             TbUsageHistory log = new TbUsageHistory();
-            log.setApiRequestBody("Client ID: " + clientId); // No request body for GET, just store clientId
+            // ✅ Save request as JSON object
+            Map<String, Object> requestMap = new HashMap<>();
+            requestMap.put("client_id", clientId);
+            log.setApiRequestBody(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestMap));
+
+            // ✅ Save empty JSON for vendor request body (GET call)
+            log.setVendorRequestBody(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(new HashMap<>())); // No request body for GET, just store clientId
             log.setApiResponseBody(mapper.writeValueAsString(responseMap)); // Response from vendor
-            log.setVendorRequestBody("GET Request to: " + url); // Document the vendor request
+
             log.setData(mapper.writeValueAsString(responseMap.get("data"))); // Extract data if present
 
-            log.setStatus(responseMap.containsKey("status") && (int) responseMap.get("status") == 200 ? 1 : 0);
+            log.setStatus(responseMap.containsKey("status_code") && (int) responseMap.get("status_code") == 200 ? 1 : 0);
             log.setMessage(responseMap.containsKey("message") ? responseMap.get("message").toString() : "No message");
             log.setMessageCode(responseMap.containsKey("message_code") ? responseMap.get("message_code").toString() : null);
             log.setReadOnly("N");
